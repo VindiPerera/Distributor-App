@@ -16,6 +16,15 @@
                 <div class="bg-critical-soft text-critical text-sm px-4 py-2 rounded-lg">{{ $errors->first() }}</div>
             @endif
 
+            <form method="GET" class="flex gap-2">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..."
+                       class="border-line rounded-md shadow-sm text-sm w-72 focus:border-accent focus:ring-accent">
+                <button class="px-3 py-1.5 bg-line-soft text-ink text-sm rounded-md hover:bg-line">Search</button>
+                @if (request('search'))
+                    <a href="{{ route('users.index') }}" class="self-center text-sm text-accent hover:underline">Reset</a>
+                @endif
+            </form>
+
             <div class="bg-surface border border-line shadow-sm rounded-lg overflow-hidden">
                 <table class="w-full text-sm">
                     <thead class="bg-line-soft">
@@ -27,7 +36,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($users as $user)
+                        @forelse ($users as $user)
                             <tr class="border-t border-line">
                                 <td class="px-4 py-3 font-medium text-ink">{{ $user->name }}</td>
                                 <td class="px-4 py-3 text-ink-soft">{{ $user->email }}</td>
@@ -46,7 +55,9 @@
                                     @endif
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr><td colspan="4" class="px-4 py-8 text-center text-ink-soft">No accounts found.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

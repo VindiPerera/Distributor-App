@@ -4,7 +4,16 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
+            <form method="GET" class="flex gap-2">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by product or SKU..."
+                       class="border-line rounded-md shadow-sm text-sm w-72 focus:border-accent focus:ring-accent">
+                <button class="px-3 py-1.5 bg-line-soft text-ink text-sm rounded-md hover:bg-line">Search</button>
+                @if (request('search'))
+                    <a href="{{ route('reports.low-stock') }}" class="self-center text-sm text-accent hover:underline">Reset</a>
+                @endif
+            </form>
+
             <div class="bg-surface border border-line shadow-sm rounded-lg overflow-hidden">
                 <table class="w-full text-sm">
                     <thead class="bg-line-soft">

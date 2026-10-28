@@ -8,13 +8,19 @@
 
             <p class="text-sm text-ink-soft">Products returned from an earlier purchase and credited against a later bill.</p>
 
-            <form method="GET" class="flex gap-2">
+            <form method="GET" class="flex gap-2 flex-wrap">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by invoice # or customer..."
+                       class="border-line rounded-md shadow-sm text-sm w-72 focus:border-accent focus:ring-accent">
                 <select name="product_id" class="border-line rounded-md shadow-sm text-sm focus:border-accent focus:ring-accent" onchange="this.form.submit()">
                     <option value="">All products</option>
                     @foreach ($products as $product)
                         <option value="{{ $product->id }}" {{ (string) request('product_id') === (string) $product->id ? 'selected' : '' }}>{{ $product->name }}</option>
                     @endforeach
                 </select>
+                <button class="px-3 py-1.5 bg-line-soft text-ink text-sm rounded-md hover:bg-line">Search</button>
+                @if (request('search') || request('product_id'))
+                    <a href="{{ route('sale-returns.index') }}" class="self-center text-sm text-accent hover:underline">Reset</a>
+                @endif
             </form>
 
             <div class="bg-surface border border-line shadow-sm rounded-lg overflow-hidden">

@@ -9,9 +9,14 @@ use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('name')->paginate(15);
+        $users = User::query()
+            ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('email', 'like', "%{$request->search}%"))
+            ->orderBy('name')
+            ->paginate(15)
+            ->withQueryString();
 
         return view('users.index', compact('users'));
     }

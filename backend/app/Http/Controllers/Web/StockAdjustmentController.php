@@ -13,6 +13,9 @@ class StockAdjustmentController extends Controller
     {
         $movements = StockMovement::with('product', 'user')
             ->where('type', 'adjustment')
+            ->when($request->search, fn ($q) => $q->where(fn ($sq) => $sq
+                ->whereHas('product', fn ($pq) => $pq->where('name', 'like', "%{$request->search}%"))
+                ->orWhere('notes', 'like', "%{$request->search}%")))
             ->when($request->product_id, fn ($q) => $q->where('product_id', $request->product_id))
             ->latest()
             ->paginate(20)

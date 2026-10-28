@@ -13,12 +13,18 @@
                 <div class="bg-good-soft text-good text-sm px-4 py-2 rounded">{{ session('status') }}</div>
             @endif
 
-            <form method="GET" class="flex gap-2">
+            <form method="GET" class="flex gap-2 flex-wrap">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by invoice # or customer..."
+                       class="border-line rounded-md shadow-sm text-sm w-72 focus:border-accent focus:ring-accent">
                 <select name="payment_type" class="border-line rounded-md shadow-sm text-sm focus:border-accent focus:ring-accent" onchange="this.form.submit()">
                     <option value="">All types</option>
                     <option value="cash" {{ request('payment_type') === 'cash' ? 'selected' : '' }}>Cash</option>
                     <option value="credit" {{ request('payment_type') === 'credit' ? 'selected' : '' }}>Credit</option>
                 </select>
+                <button class="px-3 py-1.5 bg-line-soft text-ink text-sm rounded-md hover:bg-line">Search</button>
+                @if (request('search') || request('payment_type'))
+                    <a href="{{ route('sales.index') }}" class="self-center text-sm text-accent hover:underline">Reset</a>
+                @endif
             </form>
 
             <div class="bg-surface border border-line shadow-sm rounded-lg overflow-hidden">

@@ -18,6 +18,8 @@ class SaleController extends Controller
     public function index(Request $request)
     {
         $sales = Sale::with('customer', 'user')
+            ->when($request->search, fn ($q) => $q->where('invoice_number', 'like', "%{$request->search}%")
+                ->orWhereHas('customer', fn ($cq) => $cq->where('name', 'like', "%{$request->search}%")))
             ->when($request->payment_type, fn($q) => $q->where('payment_type', $request->payment_type))
             ->latest('sale_date')
             ->paginate(20)
