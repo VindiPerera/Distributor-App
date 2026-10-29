@@ -45,6 +45,7 @@ class Sale {
   final String paymentType;
   final double totalAmount;
   final DateTime saleDate;
+  final String status;
   final String? customerName;
   final String? customerPhone;
 
@@ -54,6 +55,7 @@ class Sale {
     required this.paymentType,
     required this.totalAmount,
     required this.saleDate,
+    this.status = 'completed',
     this.customerName,
     this.customerPhone,
   });
@@ -65,6 +67,7 @@ class Sale {
       paymentType: json['payment_type'],
       totalAmount: double.parse(json['total_amount'].toString()),
       saleDate: DateTime.parse(json['sale_date']),
+      status: json['status'] ?? 'completed',
       customerName: json['customer'] != null ? json['customer']['name'] : null,
       customerPhone: json['customer'] != null ? json['customer']['phone'] : null,
     );

@@ -109,6 +109,7 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
   List<Customer> _customers = [];
   List<CustomerCategory> _categories = [];
   CustomerCategory? _categoryFilter;
+  List<ProductCategory> _productCategoryOptions = [];
   final Map<int, _CartLine> _cart = {};
 
   // Products the selected customer bought earlier and can still return.
@@ -177,10 +178,17 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
     } catch (_) {
       // Category filter is optional — skip silently if unavailable.
     }
+    List<ProductCategory> productCategories = [];
+    try {
+      productCategories = await _productService.categories();
+    } catch (_) {
+      // Only needed for the quick-add-product dialog — skip silently if unavailable.
+    }
     setState(() {
       _products = products;
       _customers = customers;
       _categories = categories;
+      _productCategoryOptions = productCategories;
       _isLoading = false;
     });
   }
@@ -208,6 +216,163 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         line.quantity = newQty;
       }
     });
+  }
+
+  /// Lets the rep add a product that isn't in the catalog yet, right from
+  /// the order screen, and drops it straight into the cart so the store's
+  /// order doesn't have to wait on someone updating the catalog first.
+  Future<void> _quickAddProduct() async {
+    final nameController = TextEditingController();
+    final priceController = TextEditingController();
+    final stockController = TextEditingController(text: '1');
+    ProductCategory? selectedCategory;
+    String? formError;
+    bool isSaving = false;
+
+    final created = await showModalBottomSheet<Product>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            Future<void> submit() async {
+              final name = nameController.text.trim();
+              final price = double.tryParse(priceController.text.trim());
+              final stock = int.tryParse(stockController.text.trim()) ?? 0;
+
+              if (name.isEmpty) {
+                setSheetState(() => formError = 'Enter a product name.');
+                return;
+              }
+              if (price == null || price <= 0) {
+                setSheetState(() => formError = 'Enter a valid selling price.');
+                return;
+              }
+
+              setSheetState(() {
+                formError = null;
+                isSaving = true;
+              });
+              try {
+                final product = await _productService.create(
+                  name: name,
+                  sellingPrice: price,
+                  categoryId: selectedCategory?.id,
+                  stockQuantity: stock < 0 ? 0 : stock,
+                );
+                if (sheetContext.mounted) Navigator.pop(sheetContext, product);
+              } on ApiException catch (e) {
+                setSheetState(() {
+                  formError = e.message;
+                  isSaving = false;
+                });
+              }
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text('Add New Product', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: () => Navigator.pop(sheetContext),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Not in the catalog yet? Add it here and it\'ll drop straight into this order.',
+                      style: TextStyle(fontSize: 12.5, color: AppColors.inkSoft),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      autofocus: true,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(label: RequiredLabel('Product Name')),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: priceController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(label: RequiredLabel('Selling Price'), prefixText: 'Rs. '),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: stockController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Initial Stock Quantity',
+                        helperText: 'How many units the store is taking now',
+                      ),
+                    ),
+                    if (_productCategoryOptions.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<ProductCategory>(
+                        initialValue: selectedCategory,
+                        isExpanded: true,
+                        decoration: const InputDecoration(labelText: 'Category (optional)'),
+                        items: [
+                          const DropdownMenuItem<ProductCategory>(value: null, child: Text('Uncategorized')),
+                          ..._productCategoryOptions.map((c) => DropdownMenuItem(value: c, child: Text(c.name))),
+                        ],
+                        onChanged: (c) => setSheetState(() => selectedCategory = c),
+                      ),
+                    ],
+                    if (formError != null) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.criticalSoft,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(formError!, style: const TextStyle(color: AppColors.critical, fontSize: 13)),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: isSaving ? null : submit,
+                        child: isSaving
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              )
+                            : const Text('Add Product'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    nameController.dispose();
+    priceController.dispose();
+    stockController.dispose();
+
+    if (created == null || !mounted) return;
+    setState(() {
+      _products = [..._products, created]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    });
+    _addToCart(created);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${created.name} added to the catalog and to this order.')),
+    );
   }
 
   double get _settlementAmount => double.tryParse(_settlementAmountController.text) ?? 0;
@@ -833,22 +998,43 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: TextField(
-            controller: _searchController,
-            onChanged: (value) => setState(() => _searchQuery = value),
-            decoration: InputDecoration(
-              hintText: 'Search products by name or SKU',
-              prefixIcon: const Icon(Icons.search_rounded, size: 20),
-              suffixIcon: _searchQuery.isEmpty
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.clear_rounded, size: 18),
-                      onPressed: () => setState(() {
-                        _searchController.clear();
-                        _searchQuery = '';
-                      }),
-                    ),
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() => _searchQuery = value),
+                  decoration: InputDecoration(
+                    hintText: 'Search products by name or SKU',
+                    prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                    suffixIcon: _searchQuery.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.clear_rounded, size: 18),
+                            onPressed: () => setState(() {
+                              _searchController.clear();
+                              _searchQuery = '';
+                            }),
+                          ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.add_box_outlined, color: Colors.white, size: 22),
+                  tooltip: 'Add new product',
+                  onPressed: _quickAddProduct,
+                ),
+              ),
+            ],
           ),
         ),
           if (_productCategories.isNotEmpty) ...[

@@ -44,6 +44,9 @@ class SaleController extends Controller
         ]);
 
         $data['user_id'] = $request->user()->id;
+        // Orders placed through the mobile app always land as pending —
+        // the back office confirms or cancels them from the admin panel.
+        $data['status'] = 'pending';
 
         try {
             $sale = $this->saleService->createSale($data, $data['items']);

@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="flex justify-center">
-        <img src="{{ asset('logo/logo.jpeg') }}" alt="{{ config('app.name') }}" class="w-32 h-32 rounded-xl object-contain shadow-sm mb-5">
+        <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}" class="w-32 h-32 rounded-xl object-contain shadow-sm mb-5">
     </div>
 
     <h1 class="font-display text-[1.7rem] font-semibold text-ink text-center">Welcome back</h1>

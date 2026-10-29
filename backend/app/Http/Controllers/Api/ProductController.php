@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class ProductController extends Controller
             'sku' => ['nullable', 'string', 'max:100', 'unique:products,sku'],
             'item_code' => ['nullable', 'string', 'max:100'],
             'barcode' => ['nullable', 'string', 'max:100'],
-            'category_id' => ['required', 'exists:categories,id'],
+            'category_id' => ['nullable', 'exists:categories,id'],
             'supplier_id' => ['nullable', 'exists:suppliers,id'],
             'name' => ['required', 'string', 'max:255'],
             'unit' => ['nullable', 'string', 'max:50'],
@@ -41,6 +42,7 @@ class ProductController extends Controller
 
         $data['sku'] = $data['sku'] ?? $this->generateSku();
         $data['supplier_id'] = $data['supplier_id'] ?? $this->unspecifiedSupplierId();
+        $data['category_id'] = $data['category_id'] ?? $this->unspecifiedCategoryId();
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('products', 'public');
@@ -118,6 +120,14 @@ class ProductController extends Controller
     {
         return Supplier::firstOrCreate(
             ['name' => 'Unspecified'],
+            ['is_active' => true],
+        )->id;
+    }
+
+    private function unspecifiedCategoryId(): int
+    {
+        return Category::firstOrCreate(
+            ['name' => 'Uncategorized'],
             ['is_active' => true],
         )->id;
     }

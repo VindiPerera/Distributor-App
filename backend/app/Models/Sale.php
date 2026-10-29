@@ -64,6 +64,35 @@ class Sale extends Model
         return $this->payment_type === 'credit';
     }
 
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === 'cancelled';
+    }
+
+    public function statusLabel(): string
+    {
+        return ucfirst($this->status);
+    }
+
+    public function statusBadgeClasses(): string
+    {
+        return match ($this->status) {
+            'pending' => 'bg-warn-soft text-warn',
+            'cancelled' => 'bg-critical-soft text-critical',
+            default => 'bg-good-soft text-good',
+        };
+    }
+
     public function paymentTypeLabel(): string
     {
         // 'bank_transfer'/'split' can still appear on sales recorded before

@@ -39,6 +39,42 @@ class CreditService
     }
 
     /**
+     * Reverse whatever this sale posted to the customer's ledger (if
+     * anything) — used when an order is cancelled after its balance was
+     * already recorded. Fully-paid cash sales never posted a ledger entry,
+     * so there's nothing to do for those.
+     */
+    public function reverseSaleCredit(Sale $sale): ?CustomerLedgerEntry
+    {
+        return DB::transaction(function () use ($sale) {
+            $original = CustomerLedgerEntry::where('reference_type', Sale::class)
+                ->where('reference_id', $sale->id)
+                ->where('type', 'sale')
+                ->first();
+
+            if (!$original) {
+                return null;
+            }
+
+            $customer = Customer::whereKey($original->customer_id)->lockForUpdate()->firstOrFail();
+            $newBalance = (float) $customer->current_balance - (float) $original->amount;
+
+            $entry = $customer->ledgerEntries()->create([
+                'type' => 'adjustment',
+                'amount' => -$original->amount,
+                'balance_after' => $newBalance,
+                'reference_type' => Sale::class,
+                'reference_id' => $sale->id,
+                'notes' => "Order {$sale->invoice_number} cancelled — balance reversed",
+            ]);
+
+            $customer->update(['current_balance' => $newBalance]);
+
+            return $entry;
+        });
+    }
+
+    /**
      * Record a payment from a customer, reducing their outstanding balance.
      */
     public function recordPayment(Customer $customer, array $data): Payment
