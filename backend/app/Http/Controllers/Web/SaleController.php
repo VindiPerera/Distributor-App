@@ -21,11 +21,14 @@ class SaleController extends Controller
             ->when($request->search, fn ($q) => $q->where('invoice_number', 'like', "%{$request->search}%")
                 ->orWhereHas('customer', fn ($cq) => $cq->where('name', 'like', "%{$request->search}%")))
             ->when($request->payment_type, fn($q) => $q->where('payment_type', $request->payment_type))
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->latest('sale_date')
             ->paginate(20)
             ->withQueryString();
 
-        return view('sales.index', compact('sales'));
+        $pendingCount = Sale::where('status', 'pending')->count();
+
+        return view('sales.index', compact('sales', 'pendingCount'));
     }
 
     public function create()
@@ -63,5 +66,24 @@ class SaleController extends Controller
         $sale->load('items.product', 'customer', 'user', 'payments', 'returns.product');
 
         return view('sales.show', compact('sale'));
+    }
+
+    public function updateStatus(Request $request, Sale $sale)
+    {
+        $data = $request->validate([
+            'status' => ['required', 'in:completed,cancelled'],
+        ]);
+
+        try {
+            if ($data['status'] === 'completed') {
+                $this->saleService->completeSale($sale);
+            } else {
+                $this->saleService->cancelSale($sale, $request->user()->id);
+            }
+        } catch (\RuntimeException $e) {
+            return back()->withErrors(['status' => $e->getMessage()]);
+        }
+
+        return redirect()->route('sales.show', $sale)->with('status', 'Order '.$data['status'].'.');
     }
 }

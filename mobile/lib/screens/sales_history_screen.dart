@@ -28,6 +28,12 @@ class _SalesHistoryScreenState extends State<SalesHistoryScreen> {
     'split': (bg: AppColors.accentSoft, fg: AppColors.accent),
   };
 
+  static const _statusBadgeColors = {
+    'pending': (bg: AppColors.warnSoft, fg: AppColors.warn),
+    'cancelled': (bg: AppColors.criticalSoft, fg: AppColors.critical),
+    'completed': (bg: AppColors.goodSoft, fg: AppColors.good),
+  };
+
   @override
   void initState() {
     super.initState();
@@ -99,6 +105,7 @@ class _SalesHistoryScreenState extends State<SalesHistoryScreen> {
               itemBuilder: (context, i) {
                 final s = sales[i];
                 final badge = _paymentBadgeColors[s.paymentType] ?? (bg: AppColors.lineSoft, fg: AppColors.inkSoft);
+                final statusBadge = _statusBadgeColors[s.status] ?? (bg: AppColors.lineSoft, fg: AppColors.inkSoft);
                 final isLoading = _loadingIds.contains(s.id);
 
                 return Card(
@@ -115,11 +122,14 @@ class _SalesHistoryScreenState extends State<SalesHistoryScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      s.invoiceNumber,
-                                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.ink),
+                                    Expanded(
+                                      child: Text(
+                                        s.invoiceNumber,
+                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.ink),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 6),
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
@@ -132,6 +142,18 @@ class _SalesHistoryScreenState extends State<SalesHistoryScreen> {
                                       ),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: statusBadge.bg,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    s.status[0].toUpperCase() + s.status.substring(1),
+                                    style: TextStyle(fontSize: 11, color: statusBadge.fg, fontWeight: FontWeight.w600),
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(

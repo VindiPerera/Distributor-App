@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('sales', SaleController::class)->only(['index', 'create', 'store', 'show']);
+    Route::patch('sales/{sale}/status', [SaleController::class, 'updateStatus'])->name('sales.update-status');
     Route::get('returns', [SaleReturnController::class, 'index'])->name('sale-returns.index');
 
     Route::resource('customers', CustomerController::class);

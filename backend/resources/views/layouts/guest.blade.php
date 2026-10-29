@@ -34,7 +34,7 @@
             <div class="flex items-center justify-center p-6 sm:p-12">
                 <div class="w-full max-w-sm">
                     <div class="lg:hidden flex items-center gap-2.5 mb-10">
-                        <img src="{{ asset('logo/logo.jpeg') }}" alt="{{ config('app.name') }}" class="w-7 h-7 rounded object-contain">
+                        <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}" class="w-7 h-7 rounded object-contain">
                         <span class="font-display text-lg font-semibold text-ink">{{ config('app.name') }}</span>
                     </div>
 

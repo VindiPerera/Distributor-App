@@ -18,18 +18,16 @@
                 :class="{ 'translate-x-0': mobileNavOpen }"
             >
                 <div class="h-16 flex items-center gap-2.5 px-6 border-b border-white/15 shrink-0">
-                    <svg class="w-7 h-7 text-white shrink-0" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 8L12 4L20 8V16L12 20L4 16V8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                        <path d="M4 8L12 12M12 12L20 8M12 12V20" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                    </svg>
-                    <span class="font-display text-[1.05rem] font-semibold leading-tight text-white">{{ $shopName ?? config('app.name') }}</span>
+                    <img src="{{ asset('logo/logo.png') }}" alt="{{ $shopName ?? config('app.name') }}" class="h-9 w-auto max-w-[44px] rounded bg-white/90 object-contain shrink-0 p-0.5">
+                    <span class="font-display text-[1.05rem] font-semibold leading-tight text-white truncate">{{ $shopName ?? config('app.name') }}</span>
                 </div>
 
                 <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
                     @php
+                        $pendingOrderCount = \App\Models\Sale::where('status', 'pending')->count();
                         $navItems = [
                             ['route' => 'dashboard', 'active' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'grid'],
-                            ['route' => 'sales.index', 'active' => 'sales.*', 'label' => 'Sales', 'icon' => 'receipt'],
+                            ['route' => 'sales.index', 'active' => 'sales.*', 'label' => 'Orders', 'icon' => 'receipt', 'badge' => $pendingOrderCount],
                             ['route' => 'sale-returns.index', 'active' => 'sale-returns.*', 'label' => 'Returns', 'icon' => 'receipt'],
                             ['route' => 'customers.index', 'active' => 'customers.*', 'label' => 'Customers', 'icon' => 'users'],
                             ['route' => 'customer-categories.index', 'active' => 'customer-categories.*', 'label' => 'Customer Categories', 'icon' => 'tag'],
@@ -48,7 +46,12 @@
                         <a href="{{ route($item['route']) }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-[0.9rem] font-medium transition-colors {{ $isActive ? 'bg-white text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
                             <x-nav-icon :name="$item['icon']" class="w-[18px] h-[18px] shrink-0" />
-                            {{ $item['label'] }}
+                            <span class="flex-1">{{ $item['label'] }}</span>
+                            @if (!empty($item['badge']))
+                                <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-semibold {{ $isActive ? 'bg-accent text-white' : 'bg-warn text-white' }}">
+                                    {{ $item['badge'] }}
+                                </span>
+                            @endif
                         </a>
                     @endforeach
 

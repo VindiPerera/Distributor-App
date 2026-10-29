@@ -19,6 +19,65 @@ class SaleService
     }
 
     /**
+     * Mark a pending order as completed, i.e. the back office has processed
+     * it (stock and any credit ledger entry were already posted when the
+     * order was placed, so nothing else needs to change here).
+     */
+    public function completeSale(Sale $sale): Sale
+    {
+        if (!$sale->isPending()) {
+            throw new \RuntimeException('Only a pending order can be marked as completed.');
+        }
+
+        $sale->update(['status' => 'completed']);
+
+        return $sale;
+    }
+
+    /**
+     * Cancel an order, undoing what it committed: every sold item is
+     * restocked, and any balance it posted to the customer's account is
+     * reversed. Once cancelled, a sale is terminal — it can't be revived.
+     */
+    public function cancelSale(Sale $sale, int $userId): Sale
+    {
+        if ($sale->isCancelled()) {
+            throw new \RuntimeException('This order is already cancelled.');
+        }
+
+        return DB::transaction(function () use ($sale, $userId) {
+            $sale->load('items.product');
+
+            foreach ($sale->items as $item) {
+                // withTrashed(): the product may have been soft-deleted since
+                // this sale was made — cancellation must still be able to
+                // restock it (and reinstating stock on a deleted product is
+                // harmless; it simply isn't sellable again until restored).
+                $product = Product::withTrashed()->whereKey($item->product_id)->lockForUpdate()->firstOrFail();
+                $newStock = $product->stock_quantity + $item->quantity;
+
+                $product->stockMovements()->create([
+                    'type' => 'adjustment',
+                    'quantity' => $item->quantity,
+                    'quantity_after' => $newStock,
+                    'reference_type' => Sale::class,
+                    'reference_id' => $sale->id,
+                    'notes' => "Order {$sale->invoice_number} cancelled — stock restored",
+                    'user_id' => $userId,
+                ]);
+
+                $product->update(['stock_quantity' => $newStock]);
+            }
+
+            $this->creditService->reverseSaleCredit($sale);
+
+            $sale->update(['status' => 'cancelled']);
+
+            return $sale;
+        });
+    }
+
+    /**
      * Create a sale (cash or credit) with its line items, deduct stock,
      * apply any returned items from earlier purchases as a credit against
      * this sale's total, and — for credit sales, or a cash sale that wasn't
@@ -98,6 +157,7 @@ class SaleService
                 'return_amount' => $returnAmount,
                 'total_amount' => $totalAmount,
                 'paid_amount' => $paidAmount,
+                'status' => $data['status'] ?? 'completed',
                 'sale_date' => now(),
                 'notes' => $data['notes'] ?? null,
             ]);

@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Center(child: ShopLogo(size: 112, borderRadius: 26)),
                   const SizedBox(height: 20),
                   const Text(
-                    'Damsas Creation',
+                    'Kleen Spirit Lanka',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: AppColors.ink),
                   ),

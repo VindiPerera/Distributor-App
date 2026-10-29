@@ -13,8 +13,12 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  static const String baseUrl = 'https://damsas-creations.jaan.lk/api';
-  static const String logoUrl = 'https://damsas-creations.jaan.lk/logo/logo.png';
+  // 10.0.2.2 is the Android-emulator-only alias for the host machine's
+  // localhost — it doesn't resolve from a browser (Chrome/Edge) or the
+  // Windows desktop build, both of which talk to the Laravel dev server
+  // directly as localhost instead.
+  static const String baseUrl = 'http://localhost:8000/api';
+  static const String logoUrl = 'http://localhost:8000/logo/logo.png';
 
   static const _tokenKey = 'auth_token';
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerCategoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\PaymentController;
@@ -26,6 +27,8 @@ Route::name('api.')->group(function () {
         Route::get('customers/{customer}/returnable-items', [CustomerController::class, 'returnableItems']);
 
         Route::get('customer-categories', [CustomerCategoryController::class, 'index']);
+
+        Route::get('categories', [CategoryController::class, 'index']);
 
         Route::apiResource('products', ProductController::class);
 
