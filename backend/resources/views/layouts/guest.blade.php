@@ -13,29 +13,35 @@
         <div class="min-h-screen grid lg:grid-cols-2">
 
             <!-- Brand side -->
-            <div class="hidden lg:flex flex-col p-12 bg-ink text-paper relative overflow-hidden">
-                <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0); background-size: 28px 28px;"></div>
+            <div class="hidden lg:flex flex-col p-12 brand-gradient text-white relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/10"></div>
+                <div class="absolute -bottom-32 -left-24 w-[28rem] h-[28rem] rounded-full bg-white/[0.07]"></div>
+
+                <div class="relative flex items-center gap-3">
+                    <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}" class="w-11 h-11 rounded-xl bg-white p-1 object-contain shadow-lg">
+                    <span class="text-lg font-bold tracking-tight">{{ config('app.name') }}</span>
+                </div>
 
                 <div class="relative flex-1 flex items-center">
-                    <div class="max-w-sm">
-                        <p class="font-display text-[2rem] leading-[1.15] text-wrap-balance">
+                    <div class="max-w-md">
+                        <p class="font-display text-[2.4rem] font-extrabold leading-[1.1]">
                             One system for sales, stock, and customer accounts.
                         </p>
-                        <p class="mt-4 text-sm text-paper/60 leading-relaxed">
+                        <p class="mt-5 text-base text-white/80 leading-relaxed">
                             Ring up sales, track inventory in real time, manage customer credit, and print receipts in English or Sinhala — all from one distribution management system.
                         </p>
                     </div>
                 </div>
 
-                <p class="relative text-xs text-paper/40">&copy; {{ date('Y') }} {{ config('app.name') }}</p>
+                <p class="relative text-xs text-white/60">&copy; {{ date('Y') }} {{ config('app.name') }}</p>
             </div>
 
             <!-- Form side -->
             <div class="flex items-center justify-center p-6 sm:p-12">
-                <div class="w-full max-w-sm">
-                    <div class="lg:hidden flex items-center gap-2.5 mb-10">
-                        <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}" class="w-7 h-7 rounded object-contain">
-                        <span class="font-display text-lg font-semibold text-ink">{{ config('app.name') }}</span>
+                <div class="w-full max-w-md bg-surface rounded-3xl p-8 sm:p-10 shadow-[0_8px_40px_rgba(5,96,65,0.10)] border border-line">
+                    <div class="lg:hidden flex items-center justify-center gap-2.5 mb-8">
+                        <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}" class="w-9 h-9 rounded-lg object-contain">
+                        <span class="font-display text-lg font-bold text-ink">{{ config('app.name') }}</span>
                     </div>
 
                     {{ $slot }}

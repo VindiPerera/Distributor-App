@@ -1,10 +1,6 @@
 <x-guest-layout>
-    <div class="flex justify-center">
-        <img src="{{ asset('logo/logo.png') }}" alt="{{ config('app.name') }}" class="w-32 h-32 rounded-xl object-contain shadow-sm mb-5">
-    </div>
-
-    <h1 class="font-display text-[1.7rem] font-semibold text-ink text-center">Welcome back</h1>
-    <p class="mt-1.5 text-sm text-ink-soft text-center">Sign in to manage sales, stock, and customer accounts.</p>
+    <h1 class="font-display text-[1.8rem] font-extrabold text-ink">Welcome back</h1>
+    <p class="mt-1.5 text-sm text-ink-soft">Sign in to manage sales, stock, and customer accounts.</p>
 
     <x-auth-session-status class="mt-5" :status="session('status')" />
 
@@ -36,7 +32,7 @@
             @endif
         </div>
 
-        <x-primary-button class="w-full py-2.5">
+        <x-primary-button class="w-full py-3 brand-gradient">
             Sign in
         </x-primary-button>
     </form>

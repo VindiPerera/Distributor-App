@@ -2,16 +2,35 @@ import 'package:flutter/material.dart';
 
 /// Matches the admin web portal's palette: white surfaces, deep green accent.
 class AppColors {
-  static const accent = Color(0xFF0F6E5C);
-  static const accentHover = Color(0xFF0B5849);
-  static const accentSoft = Color(0xFFE4F2EE);
+  static const accent = Color(0xFF0B8F5F);
+  static const accentHover = Color(0xFF087A52);
+  static const accentDark = Color(0xFF056041);
+  static const accentLight = Color(0xFF34C58A);
+  static const accentSoft = Color(0xFFE5F6EE);
+
+  /// Soft mint page background so white cards stand out.
+  static const background = Color(0xFFF4FAF7);
+
+  static const brandGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [accentLight, accent, accentDark],
+  );
+
+  static List<BoxShadow> get softShadow => [
+    BoxShadow(
+      color: accentDark.withValues(alpha: 0.08),
+      blurRadius: 18,
+      offset: const Offset(0, 6),
+    ),
+  ];
 
   static const ink = Color(0xFF1C2321);
   static const inkSoft = Color(0xFF4B5450);
   static const paper = Color(0xFFFFFFFF);
   static const surface = Color(0xFFFFFFFF);
-  static const line = Color(0xFFE4E2DC);
-  static const lineSoft = Color(0xFFF3F3F0);
+  static const line = Color(0xFFE1ECE6);
+  static const lineSoft = Color(0xFFF1F6F3);
 
   static const good = Color(0xFF2E7D4F);
   static const goodSoft = Color(0xFFE7F4EB);
@@ -34,7 +53,10 @@ class RequiredLabel extends StatelessWidget {
       TextSpan(
         text: text,
         children: const [
-          TextSpan(text: ' *', style: TextStyle(color: AppColors.critical)),
+          TextSpan(
+            text: ' *',
+            style: TextStyle(color: AppColors.critical),
+          ),
         ],
       ),
     );
@@ -54,7 +76,7 @@ ThemeData buildAppTheme() {
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
-    scaffoldBackgroundColor: AppColors.paper,
+    scaffoldBackgroundColor: AppColors.background,
     fontFamily: 'Roboto',
 
     appBarTheme: const AppBarTheme(
@@ -68,10 +90,16 @@ ThemeData buildAppTheme() {
         fontWeight: FontWeight.w600,
       ),
       iconTheme: IconThemeData(color: Colors.white),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      ),
     ),
 
     textTheme: const TextTheme(
-      headlineSmall: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w700),
+      headlineSmall: TextStyle(
+        color: AppColors.ink,
+        fontWeight: FontWeight.w700,
+      ),
       titleLarge: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w700),
       titleMedium: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w600),
       bodyLarge: TextStyle(color: AppColors.ink),
@@ -83,7 +111,7 @@ ThemeData buildAppTheme() {
       color: AppColors.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         side: const BorderSide(color: AppColors.line),
       ),
       margin: EdgeInsets.zero,
@@ -91,22 +119,22 @@ ThemeData buildAppTheme() {
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.lineSoft,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      fillColor: AppColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.line),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.line),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.accent, width: 1.6),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.accent, width: 1.8),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.critical, width: 1.2),
       ),
       labelStyle: const TextStyle(color: AppColors.inkSoft),
@@ -121,8 +149,12 @@ ThemeData buildAppTheme() {
         disabledForegroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
+        ),
       ),
     ),
 
@@ -144,7 +176,11 @@ ThemeData buildAppTheme() {
 
     iconTheme: const IconThemeData(color: AppColors.inkSoft),
 
-    dividerTheme: const DividerThemeData(color: AppColors.line, thickness: 1, space: 1),
+    dividerTheme: const DividerThemeData(
+      color: AppColors.line,
+      thickness: 1,
+      space: 1,
+    ),
 
     segmentedButtonTheme: SegmentedButtonThemeData(
       style: SegmentedButton.styleFrom(
@@ -176,11 +212,14 @@ ThemeData buildAppTheme() {
     dropdownMenuTheme: DropdownMenuThemeData(
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.lineSoft,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        fillColor: AppColors.surface,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.line),
         ),
       ),
     ),

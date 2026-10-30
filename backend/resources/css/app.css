@@ -19,24 +19,28 @@
 @tailwind utilities;
 
 :root {
-    --accent: #0f6e5c;
-    --accent-hover: #0b5849;
-    --accent-soft: #e4f2ee;
-    --accent-soft-hover: #d3e9e2;
+    --accent: #0b8f5f;
+    --accent-hover: #087a52;
+    --accent-dark: #056041;
+    --accent-light: #34c58a;
+    --accent-soft: #e5f6ee;
+    --accent-soft-hover: #d2eee1;
 
-    --ink: #1c2321;
-    --ink-soft: #4b5450;
-    --paper: #ffffff;
+    --ink: #14211c;
+    --ink-soft: #5a6b63;
+    --paper: #f4faf7;
     --surface: #ffffff;
-    --line: #e4e2dc;
-    --line-soft: #f3f3f0;
+    --line: #e1ece6;
+    --line-soft: #f1f6f3;
 
-    --good: #2e7d4f;
-    --good-soft: #e7f4eb;
-    --warn: #b8792a;
-    --warn-soft: #fbf0e0;
-    --critical: #c23b3b;
-    --critical-soft: #fbe9e9;
+    --good: #1f9254;
+    --good-soft: #e3f6ea;
+    --warn: #c0801f;
+    --warn-soft: #fcf1de;
+    --critical: #d03f3f;
+    --critical-soft: #fdeaea;
+
+    --shadow-card: 0 1px 2px rgba(5, 96, 65, 0.05), 0 8px 24px rgba(5, 96, 65, 0.06);
 }
 
 body {
@@ -45,10 +49,25 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+/* Headings use Inter now for a cleaner, modern look (Fraunces serif retired). */
 .font-display {
-    font-family: 'Fraunces', ui-serif, Georgia, serif;
-    font-optical-sizing: auto;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.02em;
     text-wrap: balance;
+}
+
+.brand-gradient {
+    background: linear-gradient(160deg, var(--accent-light) -20%, var(--accent) 35%, var(--accent-dark) 110%);
+}
+
+/* Soften every white card/table container on the mint background. */
+.bg-surface.border.border-line {
+    box-shadow: var(--shadow-card);
+    border-color: transparent;
+}
+
+table thead th {
+    background-color: var(--line-soft);
 }
 
 .tabular {

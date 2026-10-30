@@ -14,12 +14,12 @@
 
             <!-- Sidebar -->
             <aside
-                class="fixed inset-y-0 left-0 z-40 w-64 bg-accent flex flex-col transition-transform -translate-x-full lg:translate-x-0 print:hidden"
+                class="fixed inset-y-0 left-0 z-40 w-64 brand-gradient shadow-xl shadow-accent-dark/20 flex flex-col transition-transform -translate-x-full lg:translate-x-0 print:hidden"
                 :class="{ 'translate-x-0': mobileNavOpen }"
             >
-                <div class="h-16 flex items-center gap-2.5 px-6 border-b border-white/15 shrink-0">
-                    <img src="{{ asset('logo/logo.png') }}" alt="{{ $shopName ?? config('app.name') }}" class="h-9 w-auto max-w-[44px] rounded bg-white/90 object-contain shrink-0 p-0.5">
-                    <span class="font-display text-[1.05rem] font-semibold leading-tight text-white truncate">{{ $shopName ?? config('app.name') }}</span>
+                <div class="h-20 flex items-center gap-3 px-5 border-b border-white/15 shrink-0">
+                    <img src="{{ asset('logo/logo.png') }}" alt="{{ $shopName ?? config('app.name') }}" class="h-10 w-10 rounded-xl bg-white object-contain shrink-0 p-1 shadow-md">
+                    <span class="font-display text-[1.05rem] font-bold leading-tight text-white truncate">{{ $shopName ?? config('app.name') }}</span>
                 </div>
 
                 <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
@@ -44,7 +44,7 @@
                     @foreach ($navItems as $item)
                         @php $isActive = request()->routeIs($item['active']); @endphp
                         <a href="{{ route($item['route']) }}"
-                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[0.9rem] font-medium transition-colors {{ $isActive ? 'bg-white text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl text-[0.9rem] font-medium transition-all {{ $isActive ? 'bg-white text-accent shadow-md shadow-black/10' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
                             <x-nav-icon :name="$item['icon']" class="w-[18px] h-[18px] shrink-0" />
                             <span class="flex-1">{{ $item['label'] }}</span>
                             @if (!empty($item['badge']))
@@ -58,17 +58,17 @@
                     @if (Auth::user()->isAdmin())
                         <div class="pt-3 mt-3 border-t border-white/15">
                             <a href="{{ route('reports.dashboard') }}"
-                               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[0.9rem] font-medium transition-colors {{ request()->routeIs('reports.dashboard') ? 'bg-white text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl text-[0.9rem] font-medium transition-all {{ request()->routeIs('reports.dashboard') ? 'bg-white text-accent shadow-md shadow-black/10' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
                                 <x-nav-icon name="chart" class="w-[18px] h-[18px] shrink-0" />
                                 Reports Dashboard
                             </a>
                             <a href="{{ route('users.index') }}"
-                               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[0.9rem] font-medium transition-colors {{ request()->routeIs('users.*') ? 'bg-white text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl text-[0.9rem] font-medium transition-all {{ request()->routeIs('users.*') ? 'bg-white text-accent shadow-md shadow-black/10' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
                                 <x-nav-icon name="badge" class="w-[18px] h-[18px] shrink-0" />
                                 Staff
                             </a>
                             <a href="{{ route('shop-settings.edit') }}"
-                               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[0.9rem] font-medium transition-colors {{ request()->routeIs('shop-settings.*') ? 'bg-white text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl text-[0.9rem] font-medium transition-all {{ request()->routeIs('shop-settings.*') ? 'bg-white text-accent shadow-md shadow-black/10' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
                                 <x-nav-icon name="settings" class="w-[18px] h-[18px] shrink-0" />
                                 Shop Details
                             </a>
@@ -115,15 +115,15 @@
             <!-- Main -->
             <div class="flex-1 flex flex-col min-w-0 lg:pl-64 print:pl-0">
                 <!-- Mobile top bar -->
-                <div class="lg:hidden print:hidden h-14 flex items-center gap-3 px-4 border-b border-line bg-surface sticky top-0 z-20">
+                <div class="lg:hidden print:hidden h-14 flex items-center gap-3 px-4 border-b border-line bg-surface/90 backdrop-blur sticky top-0 z-20">
                     <button @click="mobileNavOpen = true" class="p-1.5 -ml-1.5 text-ink-soft">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
-                    <span class="font-display font-semibold text-ink">{{ $shopName ?? config('app.name') }}</span>
+                    <span class="font-display font-bold text-ink">{{ $shopName ?? config('app.name') }}</span>
                 </div>
 
                 @isset($header)
-                    <header class="border-b border-line bg-surface px-6 lg:px-10 py-6 print:hidden">
+                    <header class="bg-surface/80 backdrop-blur border-b border-line px-6 lg:px-10 py-6 print:hidden">
                         <div class="max-w-6xl">
                             {{ $header }}
                         </div>
@@ -133,7 +133,7 @@
                 <main class="flex-1 px-6 lg:px-10 py-8">
                     <div class="max-w-6xl">
                         @if (session('status'))
-                            <div class="mb-6 flex items-center gap-2.5 rounded-lg border border-good/25 bg-good-soft px-4 py-3 text-sm font-medium text-good">
+                            <div class="mb-6 flex items-center gap-2.5 rounded-xl border border-good/25 bg-good-soft px-4 py-3 text-sm font-medium text-good">
                                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
                                 {{ session('status') }}
                             </div>

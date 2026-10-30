@@ -17,19 +17,29 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _checkLoginStatus() async {
-    _isLoggedIn = await authService.isLoggedIn();
+    _isLoggedIn = bypassLogin ? false : await authService.isLoggedIn();
     isLoading = false;
     notifyListeners();
   }
 
+  /// DEV ONLY: when true, login skips the API and goes straight to home.
+  /// Set to false to restore real authentication.
+  static const bool bypassLogin = true;
+
   Future<void> login(String email, String password) async {
+    if (bypassLogin) {
+      currentUser = {'name': 'Demo User', 'email': email};
+      _isLoggedIn = true;
+      notifyListeners();
+      return;
+    }
     currentUser = await authService.login(email, password);
     _isLoggedIn = true;
     notifyListeners();
   }
 
   Future<void> logout() async {
-    await authService.logout();
+    if (!bypassLogin) await authService.logout();
     _isLoggedIn = false;
     currentUser = null;
     notifyListeners();
