@@ -93,43 +93,7 @@ class SaleService
     public function createSale(array $data, array $items): Sale
     {
         return DB::transaction(function () use ($data, $items) {
-            $subtotal = 0;
-            $lineItems = [];
-
-            foreach ($items as $item) {
-                $product = Product::whereKey($item['product_id'])->lockForUpdate()->firstOrFail();
-
-                if ($product->stock_quantity < $item['quantity']) {
-                    throw new \RuntimeException("Insufficient stock for product: {$product->name}");
-                }
-
-                $unitPrice = (float) $product->selling_price;
-                $discountType = ($item['discount_type'] ?? 'percent') === 'amount' ? 'amount' : 'percent';
-
-                if ($discountType === 'amount') {
-                    $discountAmount = min(max((float) ($item['discount_amount'] ?? 0), 0), $unitPrice);
-                    $discountPercent = 0;
-                    $discountedPrice = round($unitPrice - $discountAmount, 2);
-                } else {
-                    $discountPercent = min(max((float) ($item['discount_percent'] ?? 0), 0), 100);
-                    $discountAmount = 0;
-                    $discountedPrice = round($unitPrice * (1 - $discountPercent / 100), 2);
-                }
-
-                $lineTotal = $discountedPrice * $item['quantity'];
-                $subtotal += $lineTotal;
-
-                $lineItems[] = [
-                    'product' => $product,
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $unitPrice,
-                    'discount_type' => $discountType,
-                    'discount_percent' => $discountPercent,
-                    'discount_amount' => $discountAmount,
-                    'discounted_price' => $discountedPrice,
-                    'line_total' => $lineTotal,
-                ];
-            }
+            [$lineItems, $subtotal] = $this->priceLineItems($items);
 
             $returnLines = $this->prepareReturns($data['returns'] ?? [], $data['customer_id']);
             $returnAmount = array_sum(array_column($returnLines, 'amount'));
@@ -196,6 +160,137 @@ class SaleService
             }
 
             return $sale->load('items.product', 'customer', 'returns.product');
+        });
+    }
+
+    /**
+     * Resolve each requested item against its product (locking the row),
+     * check stock, and work out unit price, discount and line total.
+     *
+     * @return array{0: array<int, array<string, mixed>>, 1: float} [lineItems, subtotal]
+     */
+    private function priceLineItems(array $items): array
+    {
+        $subtotal = 0;
+        $lineItems = [];
+
+        foreach ($items as $item) {
+            $product = Product::whereKey($item['product_id'])->lockForUpdate()->firstOrFail();
+
+            if ($product->stock_quantity < $item['quantity']) {
+                throw new \RuntimeException("Insufficient stock for product: {$product->name}");
+            }
+
+            $unitPrice = (float) $product->selling_price;
+            $discountType = ($item['discount_type'] ?? 'percent') === 'amount' ? 'amount' : 'percent';
+
+            if ($discountType === 'amount') {
+                $discountAmount = min(max((float) ($item['discount_amount'] ?? 0), 0), $unitPrice);
+                $discountPercent = 0;
+                $discountedPrice = round($unitPrice - $discountAmount, 2);
+            } else {
+                $discountPercent = min(max((float) ($item['discount_percent'] ?? 0), 0), 100);
+                $discountAmount = 0;
+                $discountedPrice = round($unitPrice * (1 - $discountPercent / 100), 2);
+            }
+
+            $lineTotal = $discountedPrice * $item['quantity'];
+            $subtotal += $lineTotal;
+
+            $lineItems[] = [
+                'product' => $product,
+                'quantity' => $item['quantity'],
+                'unit_price' => $unitPrice,
+                'discount_type' => $discountType,
+                'discount_percent' => $discountPercent,
+                'discount_amount' => $discountAmount,
+                'discounted_price' => $discountedPrice,
+                'line_total' => $lineTotal,
+            ];
+        }
+
+        return [$lineItems, $subtotal];
+    }
+
+    /**
+     * Edit a pending order's items and notes. The old lines are put back in
+     * stock, the new lines are priced and deducted afresh, and the customer's
+     * ledger is nudged by the difference in what they owe. The customer and
+     * payment type can't change; cancel and re-create for that.
+     *
+     * $items: same shape as createSale().
+     */
+    public function updateOrder(Sale $sale, array $data, array $items, int $userId): Sale
+    {
+        return DB::transaction(function () use ($sale, $data, $items, $userId) {
+            $sale = Sale::whereKey($sale->id)->lockForUpdate()->firstOrFail();
+
+            if (!$sale->isPending()) {
+                throw new \RuntimeException('Only a pending order can be edited.');
+            }
+
+            // Put the old lines back in stock before re-pricing.
+            foreach ($sale->items()->get() as $old) {
+                $product = Product::withTrashed()->whereKey($old->product_id)->lockForUpdate()->firstOrFail();
+                $restored = $product->stock_quantity + $old->quantity;
+
+                $product->stockMovements()->create([
+                    'type' => 'adjustment',
+                    'quantity' => $old->quantity,
+                    'quantity_after' => $restored,
+                    'reference_type' => Sale::class,
+                    'reference_id' => $sale->id,
+                    'notes' => "Order {$sale->invoice_number} edited - stock restored",
+                    'user_id' => $userId,
+                ]);
+
+                $product->update(['stock_quantity' => $restored]);
+            }
+            $sale->items()->delete();
+
+            [$lineItems, $subtotal] = $this->priceLineItems($items);
+
+            foreach ($lineItems as $line) {
+                $sale->items()->create([
+                    'product_id' => $line['product']->id,
+                    'quantity' => $line['quantity'],
+                    'unit_price' => $line['unit_price'],
+                    'discount_type' => $line['discount_type'],
+                    'discount_percent' => $line['discount_percent'],
+                    'discount_amount' => $line['discount_amount'],
+                    'discounted_price' => $line['discounted_price'],
+                    'line_total' => $line['line_total'],
+                ]);
+
+                $fresh = Product::whereKey($line['product']->id)->lockForUpdate()->first();
+                $newStock = $fresh->stock_quantity - $line['quantity'];
+
+                $fresh->stockMovements()->create([
+                    'type' => 'sale_out',
+                    'quantity' => -$line['quantity'],
+                    'quantity_after' => $newStock,
+                    'reference_type' => Sale::class,
+                    'reference_id' => $sale->id,
+                    'notes' => "Order {$sale->invoice_number} edited",
+                    'user_id' => $userId,
+                ]);
+
+                $fresh->update(['stock_quantity' => $newStock]);
+            }
+
+            $totalAmount = max($subtotal - (float) $sale->return_amount, 0);
+            $paidAmount = min((float) $sale->paid_amount, $totalAmount);
+
+            $sale->update([
+                'subtotal' => $subtotal,
+                'total_amount' => $totalAmount,
+                'paid_amount' => $paidAmount,
+                'notes' => array_key_exists('notes', $data) ? $data['notes'] : $sale->notes,
+            ]);
+
+            $this->creditService->adjustSaleCredit($sale, round($totalAmount - $paidAmount, 2));
+
+            return $sale->load('items.product', 'customer', 'user');
         });
     }
 

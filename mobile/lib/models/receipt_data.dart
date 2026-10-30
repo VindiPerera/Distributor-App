@@ -66,17 +66,25 @@ class ReceiptData {
       // actual wall-clock time the sale happened, not the UTC clock time.
       date: sale.saleDate.toLocal(),
       lines: sale.items
-          .map((i) => ReceiptLine(
-                name: i.productName,
-                quantity: i.quantity,
-                unitPrice: i.unitPrice,
-                discountedPrice: i.discountedPrice,
-                lineTotal: i.lineTotal,
-              ))
+          .map(
+            (i) => ReceiptLine(
+              name: i.productName,
+              quantity: i.quantity,
+              unitPrice: i.unitPrice,
+              discountedPrice: i.discountedPrice,
+              lineTotal: i.lineTotal,
+            ),
+          )
           .toList(),
       subtotal: sale.subtotal,
       returns: sale.returns
-          .map((r) => ReceiptReturn(name: r.productName, quantity: r.quantity, amount: r.amount))
+          .map(
+            (r) => ReceiptReturn(
+              name: r.productName,
+              quantity: r.quantity,
+              amount: r.amount,
+            ),
+          )
           .toList(),
       total: sale.totalAmount,
       paymentType: sale.paymentType,
