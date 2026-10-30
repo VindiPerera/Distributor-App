@@ -31,9 +31,9 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     super.initState();
     _settingsService = ShopSettingsService(context.read<AuthProvider>().api);
     _settingsService.load().then(
-          (s) => setState(() => _shop = s),
-          onError: (_) => setState(() => _shop = ShopSettings.fallback),
-        );
+      (s) => setState(() => _shop = s),
+      onError: (_) => setState(() => _shop = ShopSettings.fallback),
+    );
   }
 
   Future<void> _print() async {
@@ -45,7 +45,10 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     try {
       final permitted = await _printerService.requestPermissions();
       if (!permitted) {
-        setState(() => _error = 'Bluetooth permission is required to print. Grant it in app settings.');
+        setState(
+          () => _error =
+              'Bluetooth permission is required to print. Grant it in app settings.',
+        );
         return;
       }
 
@@ -57,7 +60,10 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
 
       final devices = await _printerService.listPairedDevices();
       if (devices.isEmpty) {
-        setState(() => _error = 'No paired Bluetooth printer found. Pair your printer in phone settings first.');
+        setState(
+          () => _error =
+              'No paired Bluetooth printer found. Pair your printer in phone settings first.',
+        );
         return;
       }
 
@@ -83,10 +89,14 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
       // content (e.g. a product name typed in Sinhala even though the shop
       // otherwise prints in English) - checking only the language setting
       // let such receipts fall through to the native path and crash.
-      final needsImage = _shop!.receiptLanguage == 'si' ||
+      final needsImage =
+          _shop!.receiptLanguage == 'si' ||
           !BluetoothPrinterService.canPrintAsText(widget.receipt, _shop!);
       final printed = needsImage
-          ? await _printerService.printReceiptImage(_boundaryKey, paperSize: _shop!.paperSize)
+          ? await _printerService.printReceiptImage(
+              _boundaryKey,
+              paperSize: _shop!.paperSize,
+            )
           : await _printerService.printReceipt(widget.receipt, _shop!);
       if (mounted) {
         if (printed) {
@@ -94,7 +104,9 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             const SnackBar(content: Text('Receipt sent to printer.')),
           );
         } else {
-          setState(() => _error = 'Printing failed. Check the printer and try again.');
+          setState(
+            () => _error = 'Printing failed. Check the printer and try again.',
+          );
         }
       }
     } catch (e, st) {
@@ -114,7 +126,10 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
           children: [
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Select Printer', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              child: Text(
+                'Select Printer',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
             ),
             for (final d in devices)
               ListTile(
@@ -133,7 +148,11 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_shop == null ? 'Receipt' : 'Receipt (paperSize: ${_shop!.paperSize})'),
+        title: Text(
+          _shop == null
+              ? 'Receipt'
+              : 'Receipt (paperSize: ${_shop!.paperSize})',
+        ),
       ),
       body: _shop == null
           ? const Center(child: CircularProgressIndicator())
@@ -146,11 +165,16 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: AppColors.line),
-                          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8)],
+                          boxShadow: const [
+                            BoxShadow(color: Colors.black12, blurRadius: 8),
+                          ],
                         ),
                         child: RepaintBoundary(
                           key: _boundaryKey,
-                          child: ReceiptWidget(shop: _shop!, receipt: widget.receipt),
+                          child: ReceiptWidget(
+                            shop: _shop!,
+                            receipt: widget.receipt,
+                          ),
                         ),
                       ),
                     ),
@@ -167,12 +191,21 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                     children: [
                       if (_error != null) ...[
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.criticalSoft,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Text(_error!, style: const TextStyle(color: AppColors.critical, fontSize: 13)),
+                          child: Text(
+                            _error!,
+                            style: const TextStyle(
+                              color: AppColors.critical,
+                              fontSize: 13,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -184,10 +217,15 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                               ? const SizedBox(
                                   height: 18,
                                   width: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 )
                               : const Icon(Icons.bluetooth_rounded, size: 20),
-                          label: Text(_isPrinting ? 'Printing…' : 'Print via Bluetooth'),
+                          label: Text(
+                            _isPrinting ? 'Printing…' : 'Print via Bluetooth',
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),

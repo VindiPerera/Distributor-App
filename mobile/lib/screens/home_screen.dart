@@ -6,8 +6,8 @@ import '../services/shop_settings_service.dart';
 import '../theme.dart';
 import '../widgets/shop_logo.dart';
 import 'customers_screen.dart';
-import 'new_sale_screen.dart';
-import 'sales_history_screen.dart';
+import 'new_order_screen.dart';
+import 'orders_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   subtitle: 'Record a transaction',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const NewSaleScreen()),
+                    MaterialPageRoute(builder: (_) => const NewOrderScreen()),
                   ),
                 ),
                 _DashboardTile(
@@ -99,9 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   subtitle: 'View & reprint bills',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const SalesHistoryScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const OrdersScreen()),
                   ),
                 ),
               ],

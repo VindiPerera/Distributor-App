@@ -6,11 +6,10 @@ class AuthService {
   AuthService(this._api);
 
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final data = await _api.post(
-      '/login',
-      {'email': email, 'password': password},
-      withAuth: false,
-    );
+    final data = await _api.post('/login', {
+      'email': email,
+      'password': password,
+    }, withAuth: false);
     await _api.saveToken(data['token']);
     return data['user'];
   }

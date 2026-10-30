@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../dev_config.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
 
@@ -24,7 +25,7 @@ class AuthProvider extends ChangeNotifier {
 
   /// DEV ONLY: when true, login skips the API and goes straight to home.
   /// Set to false to restore real authentication.
-  static const bool bypassLogin = true;
+  static const bool bypassLogin = kDemoMode;
 
   Future<void> login(String email, String password) async {
     if (bypassLogin) {

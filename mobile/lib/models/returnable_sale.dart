@@ -52,7 +52,9 @@ class ReturnableSale {
       id: json['id'],
       invoiceNumber: json['invoice_number'],
       saleDate: DateTime.parse(json['sale_date']),
-      items: (json['items'] as List).map((e) => ReturnableItem.fromJson(e)).toList(),
+      items: (json['items'] as List)
+          .map((e) => ReturnableItem.fromJson(e))
+          .toList(),
     );
   }
 }

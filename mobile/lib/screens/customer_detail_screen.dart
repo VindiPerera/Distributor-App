@@ -35,7 +35,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     final ledger = _customerService.ledger(_customer.id);
     if (!mounted) return;
     setState(() {
-      _customer = customers.firstWhere((c) => c.id == _customer.id, orElse: () => _customer);
+      _customer = customers.firstWhere(
+        (c) => c.id == _customer.id,
+        orElse: () => _customer,
+      );
       _ledgerFuture = ledger;
     });
   }
@@ -43,13 +46,17 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   Future<void> _openSettleCredit() async {
     if (_customer.currentBalance <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This customer has no outstanding balance.')),
+        const SnackBar(
+          content: Text('This customer has no outstanding balance.'),
+        ),
       );
       return;
     }
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => NewSaleScreen(settlementCustomer: _customer)),
+      MaterialPageRoute(
+        builder: (_) => NewSaleScreen(settlementCustomer: _customer),
+      ),
     );
     _reload();
   }
@@ -77,7 +84,13 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (_customer.phone != null) ...[
-                    Text(_customer.phone!, style: const TextStyle(fontSize: 13, color: AppColors.inkSoft)),
+                    Text(
+                      _customer.phone!,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.inkSoft,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                   ],
                   Text(
@@ -93,7 +106,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                   const SizedBox(height: 2),
                   Text(
                     'Credit limit: Rs. ${_customer.creditLimit.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 12.5, color: AppColors.inkSoft),
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      color: AppColors.inkSoft,
+                    ),
                   ),
                 ],
               ),
@@ -110,7 +126,14 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
               ),
             ],
             const SizedBox(height: 24),
-            const Text('History', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.ink)),
+            const Text(
+              'History',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.ink,
+              ),
+            ),
             const SizedBox(height: 10),
             FutureBuilder<List<CustomerLedgerEntry>>(
               future: _ledgerFuture,
@@ -132,74 +155,102 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
                     child: Center(
-                      child: Text('No transactions yet.', style: TextStyle(color: AppColors.inkSoft)),
+                      child: Text(
+                        'No transactions yet.',
+                        style: TextStyle(color: AppColors.inkSoft),
+                      ),
                     ),
                   );
                 }
                 return Column(
                   children: entries
-                      .map((e) => Card(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 34,
-                                    height: 34,
-                                    decoration: BoxDecoration(
-                                      color: e.isSale ? AppColors.warnSoft : AppColors.goodSoft,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Icon(
-                                      e.isSale ? Icons.receipt_long_outlined : Icons.payments_outlined,
-                                      size: 17,
-                                      color: e.isSale ? AppColors.warn : AppColors.good,
-                                    ),
+                      .map(
+                        (e) => Card(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 34,
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: e.isSale
+                                        ? AppColors.warnSoft
+                                        : AppColors.goodSoft,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          e.isSale ? 'Credit Sale' : 'Payment',
-                                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.ink),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          [
-                                            dateFmt.format(e.createdAt.toLocal()),
-                                            if (e.referenceLabel != null) e.referenceLabel!,
-                                          ].join('  ·  '),
-                                          style: const TextStyle(fontSize: 12, color: AppColors.inkSoft),
-                                        ),
-                                      ],
-                                    ),
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    e.isSale
+                                        ? Icons.receipt_long_outlined
+                                        : Icons.payments_outlined,
+                                    size: 17,
+                                    color: e.isSale
+                                        ? AppColors.warn
+                                        : AppColors.good,
                                   ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        '${e.isSale ? '+' : '-'} Rs. ${e.amount.abs().toStringAsFixed(2)}',
-                                        style: TextStyle(
-                                          fontSize: 14,
+                                        e.isSale ? 'Credit Sale' : 'Payment',
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          color: e.isSale ? AppColors.warn : AppColors.good,
+                                          fontSize: 14,
+                                          color: AppColors.ink,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        'Bal: Rs. ${e.balanceAfter.toStringAsFixed(2)}',
-                                        style: const TextStyle(fontSize: 11.5, color: AppColors.inkSoft),
+                                        [
+                                          dateFmt.format(e.createdAt.toLocal()),
+                                          if (e.referenceLabel != null)
+                                            e.referenceLabel!,
+                                        ].join('  ·  '),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.inkSoft,
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '${e.isSale ? '+' : '-'} Rs. ${e.amount.abs().toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: e.isSale
+                                            ? AppColors.warn
+                                            : AppColors.good,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Bal: Rs. ${e.balanceAfter.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        fontSize: 11.5,
+                                        color: AppColors.inkSoft,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ))
+                          ),
+                        ),
+                      )
                       .toList(),
                 );
               },

@@ -32,7 +32,8 @@ Route::name('api.')->group(function () {
 
         Route::apiResource('products', ProductController::class);
 
-        Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show']);
+        Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'update']);
+        Route::post('sales/{sale}/cancel', [SaleController::class, 'cancel']);
 
         Route::apiResource('payments', PaymentController::class)->only(['index', 'store']);
 
