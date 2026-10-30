@@ -10,7 +10,10 @@ class CustomerService {
   CustomerService(this._api);
 
   Future<List<Customer>> list({int? categoryId}) async {
-    final data = await _api.get('/customers', query: categoryId != null ? {'category_id': '$categoryId'} : null);
+    final data = await _api.get(
+      '/customers',
+      query: categoryId != null ? {'category_id': '$categoryId'} : null,
+    );
     final items = data['data'] as List;
     return items.map((e) => Customer.fromJson(e)).toList();
   }

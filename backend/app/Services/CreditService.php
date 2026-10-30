@@ -47,21 +47,26 @@ class CreditService
     public function reverseSaleCredit(Sale $sale): ?CustomerLedgerEntry
     {
         return DB::transaction(function () use ($sale) {
-            $original = CustomerLedgerEntry::where('reference_type', Sale::class)
+            $entries = CustomerLedgerEntry::where('reference_type', Sale::class)
                 ->where('reference_id', $sale->id)
-                ->where('type', 'sale')
-                ->first();
+                ->whereIn('type', ['sale', 'adjustment'])
+                ->get();
 
-            if (!$original) {
+            // Net owed for this sale: the original posting plus any edit
+            // adjustments made while it was pending.
+            $owed = round((float) $entries->sum('amount'), 2);
+            $original = $entries->firstWhere('type', 'sale');
+
+            if (!$original || $owed == 0.0) {
                 return null;
             }
 
             $customer = Customer::whereKey($original->customer_id)->lockForUpdate()->firstOrFail();
-            $newBalance = (float) $customer->current_balance - (float) $original->amount;
+            $newBalance = (float) $customer->current_balance - $owed;
 
             $entry = $customer->ledgerEntries()->create([
                 'type' => 'adjustment',
-                'amount' => -$original->amount,
+                'amount' => -$owed,
                 'balance_after' => $newBalance,
                 'reference_type' => Sale::class,
                 'reference_id' => $sale->id,
@@ -69,6 +74,49 @@ class CreditService
             ]);
 
             $customer->update(['current_balance' => $newBalance]);
+
+            return $entry;
+        });
+    }
+
+    /**
+     * After a pending order is edited, bring what it has posted to the
+     * customer's ledger in line with the new outstanding amount.
+     */
+    public function adjustSaleCredit(Sale $sale, float $newBalanceDue): ?CustomerLedgerEntry
+    {
+        return DB::transaction(function () use ($sale, $newBalanceDue) {
+            $entries = CustomerLedgerEntry::where('reference_type', Sale::class)
+                ->where('reference_id', $sale->id)
+                ->whereIn('type', ['sale', 'adjustment'])
+                ->get();
+
+            $currentlyOwed = round((float) $entries->sum('amount'), 2);
+            $delta = round($newBalanceDue - $currentlyOwed, 2);
+
+            if ($delta == 0.0) {
+                return null;
+            }
+
+            $customer = Customer::findOrFail($sale->customer_id);
+
+            if ($entries->isEmpty()) {
+                return $this->recordSaleOnCredit($customer, $sale, $newBalanceDue);
+            }
+
+            $locked = Customer::whereKey($customer->id)->lockForUpdate()->firstOrFail();
+            $newBalance = (float) $locked->current_balance + $delta;
+
+            $entry = $locked->ledgerEntries()->create([
+                'type' => 'adjustment',
+                'amount' => $delta,
+                'balance_after' => $newBalance,
+                'reference_type' => Sale::class,
+                'reference_id' => $sale->id,
+                'notes' => "Order {$sale->invoice_number} edited",
+            ]);
+
+            $locked->update(['current_balance' => $newBalance]);
 
             return $entry;
         });

@@ -29,9 +29,9 @@ class _CartLine {
   DiscountMode discountMode = DiscountMode.percent;
 
   _CartLine(this.product, this.quantity, {double discountPercent = 0})
-      : discountController = TextEditingController(
-          text: discountPercent > 0 ? _trimZeros(discountPercent) : '',
-        );
+    : discountController = TextEditingController(
+        text: discountPercent > 0 ? _trimZeros(discountPercent) : '',
+      );
 
   static String _trimZeros(double v) {
     final s = v.toStringAsFixed(2);
@@ -124,7 +124,8 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
   int? _productCategoryFilter;
 
   final TextEditingController _paidAmountController = TextEditingController();
-  final TextEditingController _paymentReferenceController = TextEditingController();
+  final TextEditingController _paymentReferenceController =
+      TextEditingController();
 
   String _paymentType = 'cash';
   Customer? _selectedCustomer;
@@ -145,7 +146,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
     _customerService = CustomerService(api);
     _saleService = SaleService(api);
     _settlementAmountController = TextEditingController(
-      text: _isSettlement ? widget.settlementCustomer!.currentBalance.toStringAsFixed(2) : '',
+      text: _isSettlement
+          ? widget.settlementCustomer!.currentBalance.toStringAsFixed(2)
+          : '',
     );
     _loadData();
   }
@@ -270,7 +273,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
             }
 
             return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+              ),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                 child: Column(
@@ -279,7 +284,14 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                     Row(
                       children: [
                         const Expanded(
-                          child: Text('Add New Product', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                          child: Text(
+                            'Add New Product',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink,
+                            ),
+                          ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close_rounded),
@@ -290,20 +302,30 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                     const SizedBox(height: 4),
                     const Text(
                       'Not in the catalog yet? Add it here and it\'ll drop straight into this order.',
-                      style: TextStyle(fontSize: 12.5, color: AppColors.inkSoft),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.inkSoft,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: nameController,
                       autofocus: true,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(label: RequiredLabel('Product Name')),
+                      decoration: const InputDecoration(
+                        label: RequiredLabel('Product Name'),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(label: RequiredLabel('Selling Price'), prefixText: 'Rs. '),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: const InputDecoration(
+                        label: RequiredLabel('Selling Price'),
+                        prefixText: 'Rs. ',
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -319,23 +341,41 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                       DropdownButtonFormField<ProductCategory>(
                         initialValue: selectedCategory,
                         isExpanded: true,
-                        decoration: const InputDecoration(labelText: 'Category (optional)'),
+                        decoration: const InputDecoration(
+                          labelText: 'Category (optional)',
+                        ),
                         items: [
-                          const DropdownMenuItem<ProductCategory>(value: null, child: Text('Uncategorized')),
-                          ..._productCategoryOptions.map((c) => DropdownMenuItem(value: c, child: Text(c.name))),
+                          const DropdownMenuItem<ProductCategory>(
+                            value: null,
+                            child: Text('Uncategorized'),
+                          ),
+                          ..._productCategoryOptions.map(
+                            (c) =>
+                                DropdownMenuItem(value: c, child: Text(c.name)),
+                          ),
                         ],
-                        onChanged: (c) => setSheetState(() => selectedCategory = c),
+                        onChanged: (c) =>
+                            setSheetState(() => selectedCategory = c),
                       ),
                     ],
                     if (formError != null) ...[
                       const SizedBox(height: 12),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.criticalSoft,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(formError!, style: const TextStyle(color: AppColors.critical, fontSize: 13)),
+                        child: Text(
+                          formError!,
+                          style: const TextStyle(
+                            color: AppColors.critical,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
                     ],
                     const SizedBox(height: 20),
@@ -347,7 +387,10 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
                             : const Text('Add Product'),
                       ),
@@ -367,18 +410,28 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
 
     if (created == null || !mounted) return;
     setState(() {
-      _products = [..._products, created]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+      _products = [..._products, created]
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     });
     _addToCart(created);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${created.name} added to the catalog and to this order.')),
+      SnackBar(
+        content: Text(
+          '${created.name} added to the catalog and to this order.',
+        ),
+      ),
     );
   }
 
-  double get _settlementAmount => double.tryParse(_settlementAmountController.text) ?? 0;
+  double get _settlementAmount =>
+      double.tryParse(_settlementAmountController.text) ?? 0;
 
-  double get _subtotal => _isSettlement ? _settlementAmount : _cart.values.fold(0, (sum, line) => sum + line.lineTotal);
-  int get _itemCount => _isSettlement ? (_settlementAmount > 0 ? 1 : 0) : _cart.values.fold(0, (sum, line) => sum + line.quantity);
+  double get _subtotal => _isSettlement
+      ? _settlementAmount
+      : _cart.values.fold(0, (sum, line) => sum + line.lineTotal);
+  int get _itemCount => _isSettlement
+      ? (_settlementAmount > 0 ? 1 : 0)
+      : _cart.values.fold(0, (sum, line) => sum + line.quantity);
 
   /// All returnable items across every one of the customer's past sales,
   /// flattened, keyed by sale_item_id — convenient for looking up a
@@ -429,7 +482,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
       if (quantity <= 0) {
         _selectedReturns.remove(item.saleItemId);
       } else {
-        _selectedReturns[item.saleItemId] = quantity > item.returnableQuantity ? item.returnableQuantity : quantity;
+        _selectedReturns[item.saleItemId] = quantity > item.returnableQuantity
+            ? item.returnableQuantity
+            : quantity;
       }
     });
   }
@@ -451,7 +506,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
   }
 
   /// Unpaid portion of this sale, tracked on the customer's account balance.
-  double get _balanceDue => _paymentType == 'credit' ? _total : ((_total - _paidAmount) * 100).round() / 100;
+  double get _balanceDue => _paymentType == 'credit'
+      ? _total
+      : ((_total - _paidAmount) * 100).round() / 100;
 
   /// Distinct product categories present in the loaded catalog, sorted by
   /// name. Derived from the products themselves (each already carries its
@@ -463,16 +520,25 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         seen[p.categoryId!] = p.categoryName!;
       }
     }
-    final entries = seen.entries.map((e) => (id: e.key, name: e.value)).toList();
-    entries.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    final entries = seen.entries
+        .map((e) => (id: e.key, name: e.value))
+        .toList();
+    entries.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
     return entries;
   }
 
   List<Product> get _filteredProducts {
     final query = _searchQuery.trim().toLowerCase();
     return _products.where((p) {
-      final matchesQuery = query.isEmpty || p.name.toLowerCase().contains(query) || p.sku.toLowerCase().contains(query);
-      final matchesCategory = _productCategoryFilter == null || p.categoryId == _productCategoryFilter;
+      final matchesQuery =
+          query.isEmpty ||
+          p.name.toLowerCase().contains(query) ||
+          p.sku.toLowerCase().contains(query);
+      final matchesCategory =
+          _productCategoryFilter == null ||
+          p.categoryId == _productCategoryFilter;
       return matchesQuery && matchesCategory;
     }).toList();
   }
@@ -486,8 +552,12 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         ? null
         : {category.id, ...category.children.map((c) => c.id)};
     return _customers.where((c) {
-      final matchesQuery = q.isEmpty || c.name.toLowerCase().contains(q) || (c.phone ?? '').toLowerCase().contains(q);
-      final matchesCategory = matchingIds == null || matchingIds.contains(c.categoryId);
+      final matchesQuery =
+          q.isEmpty ||
+          c.name.toLowerCase().contains(q) ||
+          (c.phone ?? '').toLowerCase().contains(q);
+      final matchesCategory =
+          matchingIds == null || matchingIds.contains(c.categoryId);
       return matchesQuery && matchesCategory;
     }).toList();
   }
@@ -498,7 +568,11 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
       height: 44,
       color: AppColors.lineSoft,
       alignment: Alignment.center,
-      child: const Icon(Icons.inventory_2_outlined, size: 20, color: AppColors.inkSoft),
+      child: const Icon(
+        Icons.inventory_2_outlined,
+        size: 20,
+        color: AppColors.inkSoft,
+      ),
     );
   }
 
@@ -515,9 +589,14 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         return StatefulBuilder(
           builder: (sheetContext, setSheetState) {
             final query = searchController.text;
-            final results = _filterCustomers(query, category: sheetSubcategoryFilter ?? sheetCategoryFilter);
+            final results = _filterCustomers(
+              query,
+              category: sheetSubcategoryFilter ?? sheetCategoryFilter,
+            );
             return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+              ),
               child: SizedBox(
                 height: MediaQuery.of(sheetContext).size.height * 0.75,
                 child: Column(
@@ -527,7 +606,14 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                       child: Row(
                         children: [
                           const Expanded(
-                            child: Text('Select Customer', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                            child: Text(
+                              'Select Customer',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.ink,
+                              ),
+                            ),
                           ),
                           IconButton(
                             icon: const Icon(Icons.close_rounded),
@@ -544,12 +630,20 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                         onChanged: (_) => setSheetState(() {}),
                         decoration: InputDecoration(
                           hintText: 'Search by name or phone',
-                          prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            size: 20,
+                          ),
                           suffixIcon: searchController.text.isEmpty
                               ? null
                               : IconButton(
-                                  icon: const Icon(Icons.clear_rounded, size: 18),
-                                  onPressed: () => setSheetState(() => searchController.clear()),
+                                  icon: const Icon(
+                                    Icons.clear_rounded,
+                                    size: 18,
+                                  ),
+                                  onPressed: () => setSheetState(
+                                    () => searchController.clear(),
+                                  ),
                                 ),
                         ),
                       ),
@@ -588,7 +682,8 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                         ),
                       ),
                     ],
-                    if (sheetCategoryFilter != null && sheetCategoryFilter!.children.isNotEmpty) ...[
+                    if (sheetCategoryFilter != null &&
+                        sheetCategoryFilter!.children.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       SizedBox(
                         height: 30,
@@ -599,14 +694,19 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                             _CategoryChip(
                               label: 'All ${sheetCategoryFilter!.name}',
                               selected: sheetSubcategoryFilter == null,
-                              onTap: () => setSheetState(() => sheetSubcategoryFilter = null),
+                              onTap: () => setSheetState(
+                                () => sheetSubcategoryFilter = null,
+                              ),
                             ),
                             const SizedBox(width: 8),
-                            for (final sub in sheetCategoryFilter!.children) ...[
+                            for (final sub
+                                in sheetCategoryFilter!.children) ...[
                               _CategoryChip(
                                 label: sub.name,
                                 selected: sheetSubcategoryFilter?.id == sub.id,
-                                onTap: () => setSheetState(() => sheetSubcategoryFilter = sub),
+                                onTap: () => setSheetState(
+                                  () => sheetSubcategoryFilter = sub,
+                                ),
                               ),
                               const SizedBox(width: 8),
                             ],
@@ -618,22 +718,35 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                     Expanded(
                       child: results.isEmpty
                           ? const Center(
-                              child: Text('No customers match your search.', style: TextStyle(color: AppColors.inkSoft)),
+                              child: Text(
+                                'No customers match your search.',
+                                style: TextStyle(color: AppColors.inkSoft),
+                              ),
                             )
                           : ListView.separated(
                               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                               itemCount: results.length,
-                              separatorBuilder: (_, __) => const SizedBox(height: 8),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 8),
                               itemBuilder: (context, i) {
                                 final c = results[i];
                                 return Card(
                                   child: ListTile(
-                                    title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                    title: Text(
+                                      c.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                     subtitle: Text(
                                       [
-                                        if (c.phone != null && c.phone!.isNotEmpty) c.phone!,
-                                        if (c.categoryName != null) c.categoryName!,
-                                        if (c.currentBalance > 0) 'Owes Rs. ${c.currentBalance.toStringAsFixed(0)}',
+                                        if (c.phone != null &&
+                                            c.phone!.isNotEmpty)
+                                          c.phone!,
+                                        if (c.categoryName != null)
+                                          c.categoryName!,
+                                        if (c.currentBalance > 0)
+                                          'Owes Rs. ${c.currentBalance.toStringAsFixed(0)}',
                                       ].join('  ·  '),
                                     ),
                                     onTap: () => Navigator.pop(sheetContext, c),
@@ -663,7 +776,11 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
   Future<void> _pickReturnItem(BuildContext context) async {
     if (_returnableSales.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This customer has no past purchases available to return.')),
+        const SnackBar(
+          content: Text(
+            'This customer has no past purchases available to return.',
+          ),
+        ),
       );
       return;
     }
@@ -675,7 +792,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         return StatefulBuilder(
           builder: (sheetContext, setSheetState) {
             return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+              ),
               child: SizedBox(
                 height: MediaQuery.of(sheetContext).size.height * 0.75,
                 child: Column(
@@ -685,7 +804,14 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                       child: Row(
                         children: [
                           const Expanded(
-                            child: Text('Return a Product', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                            child: Text(
+                              'Return a Product',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.ink,
+                              ),
+                            ),
                           ),
                           IconButton(
                             icon: const Icon(Icons.close_rounded),
@@ -706,26 +832,44 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                             children: [
                               Text(
                                 'Invoice ${sale.invoiceNumber}',
-                                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.inkSoft,
+                                ),
                               ),
                               const SizedBox(height: 6),
                               ...sale.items.map((item) {
-                                final selectedQty = _selectedReturns[item.saleItemId] ?? 0;
+                                final selectedQty =
+                                    _selectedReturns[item.saleItemId] ?? 0;
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
                                     child: Row(
                                       children: [
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                              Text(
+                                                item.productName,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
                                               const SizedBox(height: 2),
                                               Text(
                                                 'Rs. ${item.unitPrice.toStringAsFixed(2)} each  ·  ${item.returnableQuantity} returnable',
-                                                style: const TextStyle(fontSize: 12, color: AppColors.inkSoft),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: AppColors.inkSoft,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -733,12 +877,20 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                                         _QtyStepper(
                                           quantity: selectedQty,
                                           onDecrement: () {
-                                            _setReturnQuantity(item, selectedQty - 1);
+                                            _setReturnQuantity(
+                                              item,
+                                              selectedQty - 1,
+                                            );
                                             setSheetState(() {});
                                           },
                                           onIncrement: () {
-                                            if (selectedQty >= item.returnableQuantity) return;
-                                            _setReturnQuantity(item, selectedQty + 1);
+                                            if (selectedQty >=
+                                                item.returnableQuantity)
+                                              return;
+                                            _setReturnQuantity(
+                                              item,
+                                              selectedQty + 1,
+                                            );
                                             setSheetState(() {});
                                           },
                                         ),
@@ -765,13 +917,18 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
   Future<void> _openSettleCredit(Customer customer) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => NewSaleScreen(settlementCustomer: customer)),
+      MaterialPageRoute(
+        builder: (_) => NewSaleScreen(settlementCustomer: customer),
+      ),
     );
     final customers = await _customerService.list();
     if (mounted) {
       setState(() {
         _customers = customers;
-        _selectedCustomer = customers.firstWhere((c) => c.id == customer.id, orElse: () => customer);
+        _selectedCustomer = customers.firstWhere(
+          (c) => c.id == customer.id,
+          orElse: () => customer,
+        );
       });
     }
   }
@@ -779,9 +936,7 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
   Future<void> _openCheckout() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => _CheckoutScreen(state: this),
-      ),
+      MaterialPageRoute(builder: (_) => _CheckoutScreen(state: this)),
     );
   }
 
@@ -811,13 +966,17 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         paymentReference: _paymentReferenceController.text.trim(),
         paidAmount: _allowsPartialPayment ? _paidAmount : null,
         items: _cart.values
-            .map((l) => SaleItemInput(
-                  productId: l.product.id,
-                  quantity: l.quantity,
-                  discountType: l.discountMode == DiscountMode.amount ? 'amount' : 'percent',
-                  discountPercent: l.discountPercent,
-                  discountAmount: l.discountAmount,
-                ))
+            .map(
+              (l) => SaleItemInput(
+                productId: l.product.id,
+                quantity: l.quantity,
+                discountType: l.discountMode == DiscountMode.amount
+                    ? 'amount'
+                    : 'percent',
+                discountPercent: l.discountPercent,
+                discountAmount: l.discountAmount,
+              ),
+            )
             .toList(),
         returns: _selectedReturns.entries
             .map((e) => ReturnInput(saleItemId: e.key, quantity: e.value))
@@ -825,7 +984,8 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
       );
       if (!mounted) return;
       final sale = Sale.fromJson(result);
-      final cashierName = context.read<AuthProvider>().currentUser?['name'] as String? ?? '-';
+      final cashierName =
+          context.read<AuthProvider>().currentUser?['name'] as String? ?? '-';
       final returnsById = _returnableItemsById;
 
       final receipt = ReceiptData(
@@ -834,22 +994,26 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         // (Sri Lanka) time on the receipt instead of the raw UTC clock time.
         date: sale.saleDate.toLocal(),
         lines: _cart.values
-            .map((l) => ReceiptLine(
-                  name: l.product.name,
-                  quantity: l.quantity,
-                  unitPrice: l.product.sellingPrice,
-                  discountedPrice: l.discountedPrice,
-                  lineTotal: l.lineTotal,
-                ))
+            .map(
+              (l) => ReceiptLine(
+                name: l.product.name,
+                quantity: l.quantity,
+                unitPrice: l.product.sellingPrice,
+                discountedPrice: l.discountedPrice,
+                lineTotal: l.lineTotal,
+              ),
+            )
             .toList(),
         subtotal: _subtotal,
         returns: _selectedReturns.entries
             .where((e) => returnsById.containsKey(e.key))
-            .map((e) => ReceiptReturn(
-                  name: returnsById[e.key]!.productName,
-                  quantity: e.value,
-                  amount: returnsById[e.key]!.unitPrice * e.value,
-                ))
+            .map(
+              (e) => ReceiptReturn(
+                name: returnsById[e.key]!.productName,
+                quantity: e.value,
+                amount: returnsById[e.key]!.unitPrice * e.value,
+              ),
+            )
             .toList(),
         total: _total,
         paymentType: _paymentType,
@@ -864,7 +1028,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         );
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ReceiptPreviewScreen(receipt: receipt)),
+          MaterialPageRoute(
+            builder: (_) => ReceiptPreviewScreen(receipt: receipt),
+          ),
         );
         if (mounted) {
           // Submission always happens from the checkout page pushed on top
@@ -890,7 +1056,10 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
       return;
     }
     if (amount > customer.currentBalance) {
-      setState(() => _error = 'Amount cannot exceed the outstanding balance of Rs. ${customer.currentBalance.toStringAsFixed(2)}.');
+      setState(
+        () => _error =
+            'Amount cannot exceed the outstanding balance of Rs. ${customer.currentBalance.toStringAsFixed(2)}.',
+      );
       return;
     }
 
@@ -906,9 +1075,12 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         method: _settlementMethod,
       );
       if (!mounted) return;
-      final cashierName = context.read<AuthProvider>().currentUser?['name'] as String? ?? '-';
+      final cashierName =
+          context.read<AuthProvider>().currentUser?['name'] as String? ?? '-';
       final paymentId = result['id'];
-      final paidAt = result['paid_at'] != null ? DateTime.tryParse(result['paid_at'] as String) : null;
+      final paidAt = result['paid_at'] != null
+          ? DateTime.tryParse(result['paid_at'] as String)
+          : null;
 
       final receipt = ReceiptData(
         invoiceNumber: 'PMT-$paymentId',
@@ -936,7 +1108,9 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
         );
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ReceiptPreviewScreen(receipt: receipt)),
+          MaterialPageRoute(
+            builder: (_) => ReceiptPreviewScreen(receipt: receipt),
+          ),
         );
         if (mounted) Navigator.pop(context);
       }
@@ -955,7 +1129,11 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isSettlement ? 'Settle Credit — ${widget.settlementCustomer!.name}' : 'New Sale'),
+        title: Text(
+          _isSettlement
+              ? 'Settle Credit — ${widget.settlementCustomer!.name}'
+              : 'New Sale',
+        ),
         actions: [
           if (!_isSettlement)
             Stack(
@@ -971,7 +1149,10 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                     top: 8,
                     right: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 1,
+                      ),
                       constraints: const BoxConstraints(minWidth: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -980,7 +1161,11 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                       child: Text(
                         '$_itemCount',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: AppColors.accent, fontSize: 10.5, fontWeight: FontWeight.w800),
+                        style: const TextStyle(
+                          color: AppColors.accent,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                   ),
@@ -1029,7 +1214,11 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.add_box_outlined, color: Colors.white, size: 22),
+                  icon: const Icon(
+                    Icons.add_box_outlined,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                   tooltip: 'Add new product',
                   onPressed: _quickAddProduct,
                 ),
@@ -1037,139 +1226,168 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
             ],
           ),
         ),
-          if (_productCategories.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 34,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
+        if (_productCategories.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 34,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _CategoryChip(
+                  label: 'All',
+                  selected: _productCategoryFilter == null,
+                  onTap: () => setState(() => _productCategoryFilter = null),
+                ),
+                const SizedBox(width: 8),
+                for (final cat in _productCategories) ...[
                   _CategoryChip(
-                    label: 'All',
-                    selected: _productCategoryFilter == null,
-                    onTap: () => setState(() => _productCategoryFilter = null),
+                    label: cat.name,
+                    selected: _productCategoryFilter == cat.id,
+                    onTap: () =>
+                        setState(() => _productCategoryFilter = cat.id),
                   ),
                   const SizedBox(width: 8),
-                  for (final cat in _productCategories) ...[
-                    _CategoryChip(
-                      label: cat.name,
-                      selected: _productCategoryFilter == cat.id,
-                      onTap: () => setState(() => _productCategoryFilter = cat.id),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
                 ],
-              ),
+              ],
             ),
-          ],
-          Expanded(
-            child: _products.isEmpty
-                ? const Center(
-                    child: Text('No products available.', style: TextStyle(color: AppColors.inkSoft)),
-                  )
-                : _filteredProducts.isEmpty
-                    ? const Center(
-                        child: Text('No products match your filters.', style: TextStyle(color: AppColors.inkSoft)),
-                      )
-                    : ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _filteredProducts.length,
-                    separatorBuilder: (context, i) => const SizedBox(height: 8),
-                    itemBuilder: (context, i) {
-                      final p = _filteredProducts[i];
-                      final inCart = _cart.containsKey(p.id);
-                      final lowStock = p.stockQuantity <= 0;
+          ),
+        ],
+        Expanded(
+          child: _products.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No products available.',
+                    style: TextStyle(color: AppColors.inkSoft),
+                  ),
+                )
+              : _filteredProducts.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No products match your filters.',
+                    style: TextStyle(color: AppColors.inkSoft),
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _filteredProducts.length,
+                  separatorBuilder: (context, i) => const SizedBox(height: 8),
+                  itemBuilder: (context, i) {
+                    final p = _filteredProducts[i];
+                    final inCart = _cart.containsKey(p.id);
+                    final lowStock = p.stockQuantity <= 0;
 
-                      return Card(
-                        color: inCart ? AppColors.accentSoft : AppColors.surface,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(14),
-                          onTap: lowStock ? null : () => _addToCart(p),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: p.imageUrl != null
-                                      ? Image.network(
-                                          p.imageUrl!,
-                                          width: 44,
-                                          height: 44,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) => _productPlaceholder(),
-                                        )
-                                      : _productPlaceholder(),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        p.name,
-                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.ink),
+                    return Card(
+                      color: inCart ? AppColors.accentSoft : AppColors.surface,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: lowStock ? null : () => _addToCart(p),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: p.imageUrl != null
+                                    ? Image.network(
+                                        p.imageUrl!,
+                                        width: 44,
+                                        height: 44,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                _productPlaceholder(),
+                                      )
+                                    : _productPlaceholder(),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      p.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                        color: AppColors.ink,
                                       ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        'Rs. ${p.sellingPrice.toStringAsFixed(2)}  ·  Stock: ${p.stockQuantity}',
-                                        style: TextStyle(
-                                          fontSize: 12.5,
-                                          color: lowStock ? AppColors.critical : AppColors.inkSoft,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (inCart) ...[
-                                  _QtyStepper(
-                                    quantity: _cart[p.id]!.quantity,
-                                    onDecrement: () => _updateQuantity(p.id, -1),
-                                    onIncrement: () => _updateQuantity(p.id, 1),
-                                  ),
-                                ] else
-                                  Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
-                                      color: lowStock ? AppColors.lineSoft : AppColors.accent,
-                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: IconButton(
-                                      padding: EdgeInsets.zero,
-                                      icon: Icon(
-                                        Icons.add_rounded,
-                                        size: 20,
-                                        color: lowStock ? AppColors.inkSoft : Colors.white,
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      'Rs. ${p.sellingPrice.toStringAsFixed(2)}  ·  Stock: ${p.stockQuantity}',
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        color: lowStock
+                                            ? AppColors.critical
+                                            : AppColors.inkSoft,
                                       ),
-                                      onPressed: lowStock ? null : () => _addToCart(p),
                                     ),
+                                  ],
+                                ),
+                              ),
+                              if (inCart) ...[
+                                _QtyStepper(
+                                  quantity: _cart[p.id]!.quantity,
+                                  onDecrement: () => _updateQuantity(p.id, -1),
+                                  onIncrement: () => _updateQuantity(p.id, 1),
+                                ),
+                              ] else
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: lowStock
+                                        ? AppColors.lineSoft
+                                        : AppColors.accent,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                              ],
-                            ),
+                                  child: IconButton(
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      Icons.add_rounded,
+                                      size: 20,
+                                      color: lowStock
+                                          ? AppColors.inkSoft
+                                          : Colors.white,
+                                    ),
+                                    onPressed: lowStock
+                                        ? null
+                                        : () => _addToCart(p),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                      );
-                    },
+                      ),
+                    );
+                  },
+                ),
+        ),
+        if (_itemCount > 0)
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: SizedBox(
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: _openCheckout,
+                  icon: const Icon(
+                    Icons.shopping_cart_checkout_rounded,
+                    size: 20,
                   ),
-          ),
-          if (_itemCount > 0)
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: SizedBox(
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: _openCheckout,
-                    icon: const Icon(Icons.shopping_cart_checkout_rounded, size: 20),
-                    label: Text('View Cart · $_itemCount item${_itemCount == 1 ? '' : 's'} · Rs. ${_total.toStringAsFixed(2)}'),
+                  label: Text(
+                    'View Cart · $_itemCount item${_itemCount == 1 ? '' : 's'} · Rs. ${_total.toStringAsFixed(2)}',
                   ),
                 ),
               ),
             ),
-        ],
+          ),
+      ],
     );
   }
 
@@ -1189,17 +1407,30 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(customer.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.ink)),
+                Text(
+                  customer.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: AppColors.ink,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   'Outstanding balance: Rs. ${customer.currentBalance.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 13.5, color: AppColors.inkSoft),
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    color: AppColors.inkSoft,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Amount to settle', style: TextStyle(fontSize: 13.5, color: AppColors.inkSoft)),
+          const Text(
+            'Amount to settle',
+            style: TextStyle(fontSize: 13.5, color: AppColors.inkSoft),
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _settlementAmountController,
@@ -1208,15 +1439,20 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
             decoration: const InputDecoration(prefixText: 'Rs. '),
           ),
           const SizedBox(height: 20),
-          const Text('Payment method', style: TextStyle(fontSize: 13.5, color: AppColors.inkSoft)),
+          const Text(
+            'Payment method',
+            style: TextStyle(fontSize: 13.5, color: AppColors.inkSoft),
+          ),
           const SizedBox(height: 8),
           SegmentedButton<String>(
             segments: _settlementMethodOptions
-                .map((o) => ButtonSegment(
-                      value: o.value,
-                      label: Text(o.label),
-                      icon: Icon(o.icon, size: 16),
-                    ))
+                .map(
+                  (o) => ButtonSegment(
+                    value: o.value,
+                    label: Text(o.label),
+                    icon: Icon(o.icon, size: 16),
+                  ),
+                )
                 .toList(),
             selected: {_settlementMethod},
             onSelectionChanged: (s) {},
@@ -1229,17 +1465,27 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                 color: AppColors.criticalSoft,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(_error!, style: const TextStyle(color: AppColors.critical, fontSize: 13)),
+              child: Text(
+                _error!,
+                style: const TextStyle(color: AppColors.critical, fontSize: 13),
+              ),
             ),
           ],
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total', style: TextStyle(fontSize: 14, color: AppColors.inkSoft)),
+              const Text(
+                'Total',
+                style: TextStyle(fontSize: 14, color: AppColors.inkSoft),
+              ),
               Text(
                 'Rs. ${_settlementAmount.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.ink),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink,
+                ),
               ),
             ],
           ),
@@ -1252,7 +1498,10 @@ class _NewSaleScreenState extends State<NewSaleScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Text('Complete Settlement'),
             ),
@@ -1303,114 +1552,185 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 40),
                       child: Center(
-                        child: Text('Your cart is empty.', style: TextStyle(color: AppColors.inkSoft)),
+                        child: Text(
+                          'Your cart is empty.',
+                          style: TextStyle(color: AppColors.inkSoft),
+                        ),
                       ),
                     )
                   else ...[
                     Row(
                       children: const [
-                        Expanded(flex: 4, child: Text('Product', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.inkSoft))),
+                        Expanded(
+                          flex: 4,
+                          child: Text(
+                            'Product',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.inkSoft,
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           width: 84,
-                          child: Text('Discount', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.inkSoft)),
+                          child: Text(
+                            'Discount',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.inkSoft,
+                            ),
+                          ),
                         ),
                         SizedBox(width: 6),
                         SizedBox(
                           width: 60,
-                          child: Text('Price', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.inkSoft)),
+                          child: Text(
+                            'Price',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.inkSoft,
+                            ),
+                          ),
                         ),
                         SizedBox(width: 6),
                         SizedBox(
                           width: 66,
-                          child: Text('Total', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.inkSoft)),
+                          child: Text(
+                            'Total',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.inkSoft,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    ...s._cart.values.map((line) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                flex: 4,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      line.product.name,
-                                      style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+                    ...s._cart.values.map(
+                      (line) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    line.product.name,
+                                    style: const TextStyle(
+                                      fontSize: 13.5,
+                                      color: AppColors.ink,
                                     ),
-                                    _QtyStepper(
-                                      quantity: line.quantity,
-                                      onDecrement: () {
-                                        s._updateQuantity(line.product.id, -1);
-                                        refresh();
-                                      },
-                                      onIncrement: () {
-                                        s._updateQuantity(line.product.id, 1);
-                                        refresh();
-                                      },
+                                  ),
+                                  _QtyStepper(
+                                    quantity: line.quantity,
+                                    onDecrement: () {
+                                      s._updateQuantity(line.product.id, -1);
+                                      refresh();
+                                    },
+                                    onIncrement: () {
+                                      s._updateQuantity(line.product.id, 1);
+                                      refresh();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 84,
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    controller: line.discountController,
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                          decimal: true,
+                                        ),
+                                    textAlign: TextAlign.center,
+                                    onChanged: (_) => refresh(),
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 8,
+                                          ),
+                                      hintText: '0',
+                                      prefixText:
+                                          line.discountMode ==
+                                              DiscountMode.amount
+                                          ? 'Rs. '
+                                          : null,
+                                      suffixText:
+                                          line.discountMode ==
+                                              DiscountMode.percent
+                                          ? '%'
+                                          : null,
                                     ),
-                                  ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  _DiscountModeToggle(
+                                    mode: line.discountMode,
+                                    onChanged: (mode) {
+                                      line.setMode(mode);
+                                      refresh();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                line.discountedPrice.toStringAsFixed(2),
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  color: AppColors.inkSoft,
                                 ),
                               ),
-                              SizedBox(
-                                width: 84,
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      controller: line.discountController,
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                      textAlign: TextAlign.center,
-                                      onChanged: (_) => refresh(),
-                                      decoration: InputDecoration(
-                                        isDense: true,
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                                        hintText: '0',
-                                        prefixText: line.discountMode == DiscountMode.amount ? 'Rs. ' : null,
-                                        suffixText: line.discountMode == DiscountMode.percent ? '%' : null,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    _DiscountModeToggle(
-                                      mode: line.discountMode,
-                                      onChanged: (mode) {
-                                        line.setMode(mode);
-                                        refresh();
-                                      },
-                                    ),
-                                  ],
+                            ),
+                            const SizedBox(width: 6),
+                            SizedBox(
+                              width: 66,
+                              child: Text(
+                                'Rs. ${line.lineTotal.toStringAsFixed(2)}',
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.ink,
                                 ),
                               ),
-                              const SizedBox(width: 6),
-                              SizedBox(
-                                width: 60,
-                                child: Text(
-                                  line.discountedPrice.toStringAsFixed(2),
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(fontSize: 12.5, color: AppColors.inkSoft),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              SizedBox(
-                                width: 66,
-                                child: Text(
-                                  'Rs. ${line.lineTotal.toStringAsFixed(2)}',
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.ink),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const Divider(height: 20),
                   ],
                   if (s._selectedCustomer != null) ...[
                     Row(
                       children: [
                         const Expanded(
-                          child: Text('Return a Product', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.ink)),
+                          child: Text(
+                            'Return a Product',
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.ink,
+                            ),
+                          ),
                         ),
                         TextButton.icon(
                           onPressed: s._isLoadingReturns
@@ -1419,9 +1739,15 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                                   await s._pickReturnItem(context);
                                   refresh();
                                 },
-                          icon: const Icon(Icons.assignment_return_outlined, size: 16),
+                          icon: const Icon(
+                            Icons.assignment_return_outlined,
+                            size: 16,
+                          ),
                           label: const Text('Add'),
-                          style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 0)),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                          ),
                         ),
                       ],
                     ),
@@ -1437,18 +1763,32 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                               Expanded(
                                 child: Text(
                                   '${item.productName} x${entry.value}',
-                                  style: const TextStyle(fontSize: 13, color: AppColors.ink),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.ink,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               Text(
                                 '- Rs. ${(item.unitPrice * entry.value).toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.critical),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.critical,
+                                ),
                               ),
                               IconButton(
                                 padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                icon: const Icon(Icons.close_rounded, size: 16, color: AppColors.critical),
+                                constraints: const BoxConstraints(
+                                  minWidth: 28,
+                                  minHeight: 28,
+                                ),
+                                icon: const Icon(
+                                  Icons.close_rounded,
+                                  size: 16,
+                                  color: AppColors.critical,
+                                ),
                                 onPressed: () {
                                   s._setReturnQuantity(item, 0);
                                   refresh();
@@ -1465,11 +1805,13 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     scrollDirection: Axis.horizontal,
                     child: SegmentedButton<String>(
                       segments: _paymentTypeOptions
-                          .map((o) => ButtonSegment(
-                                value: o.value,
-                                label: Text(o.label),
-                                icon: Icon(o.icon, size: 16),
-                              ))
+                          .map(
+                            (o) => ButtonSegment(
+                              value: o.value,
+                              label: Text(o.label),
+                              icon: Icon(o.icon, size: 16),
+                            ),
+                          )
                           .toList(),
                       selected: {s._paymentType},
                       onSelectionChanged: (v) {
@@ -1492,24 +1834,33 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                           child: InputDecorator(
                             decoration: InputDecoration(
                               label: const RequiredLabel('Customer'),
-                              prefixIcon: const Icon(Icons.person_search_rounded, size: 20),
+                              prefixIcon: const Icon(
+                                Icons.person_search_rounded,
+                                size: 20,
+                              ),
                             ),
                             child: Text(
                               s._selectedCustomer == null
                                   ? 'Search customer by name or phone'
-                                  : s._selectedCustomer!.phone != null && s._selectedCustomer!.phone!.isNotEmpty
-                                      ? '${s._selectedCustomer!.name}  ·  ${s._selectedCustomer!.phone}'
-                                      : s._selectedCustomer!.name,
+                                  : s._selectedCustomer!.phone != null &&
+                                        s._selectedCustomer!.phone!.isNotEmpty
+                                  ? '${s._selectedCustomer!.name}  ·  ${s._selectedCustomer!.phone}'
+                                  : s._selectedCustomer!.name,
                               style: TextStyle(
-                                color: s._selectedCustomer == null ? AppColors.inkSoft : AppColors.ink,
-                                fontWeight: s._selectedCustomer == null ? FontWeight.w400 : FontWeight.w600,
+                                color: s._selectedCustomer == null
+                                    ? AppColors.inkSoft
+                                    : AppColors.ink,
+                                fontWeight: s._selectedCustomer == null
+                                    ? FontWeight.w400
+                                    : FontWeight.w600,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
                       ),
-                      if (s._selectedCustomer != null && s._selectedCustomer!.currentBalance > 0) ...[
+                      if (s._selectedCustomer != null &&
+                          s._selectedCustomer!.currentBalance > 0) ...[
                         const SizedBox(width: 8),
                         Container(
                           height: 56,
@@ -1520,7 +1871,11 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                           ),
                           child: IconButton(
                             padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.payments_outlined, size: 19, color: AppColors.good),
+                            icon: const Icon(
+                              Icons.payments_outlined,
+                              size: 19,
+                              color: AppColors.good,
+                            ),
                             tooltip: 'Settle credit',
                             onPressed: () async {
                               await s._openSettleCredit(s._selectedCustomer!);
@@ -1536,16 +1891,27 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text('Customer Paid', style: TextStyle(fontSize: 13.5, color: AppColors.inkSoft)),
+                        const Text(
+                          'Customer Paid',
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            color: AppColors.inkSoft,
+                          ),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
                             controller: s._paidAmountController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                             onChanged: (_) => refresh(),
                             decoration: InputDecoration(
                               isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                               hintText: s._total.toStringAsFixed(2),
                               prefixText: 'Rs. ',
                             ),
@@ -1557,19 +1923,32 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                       const SizedBox(height: 6),
                       Text(
                         'Rs. ${s._balanceDue.toStringAsFixed(2)} will be added to ${s._selectedCustomer?.name ?? 'the customer\'s'} balance.',
-                        style: const TextStyle(fontSize: 12, color: AppColors.warn, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.warn,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ],
                   if (s._error != null) ...[
                     const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.criticalSoft,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(s._error!, style: const TextStyle(color: AppColors.critical, fontSize: 13)),
+                      child: Text(
+                        s._error!,
+                        style: const TextStyle(
+                          color: AppColors.critical,
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
                   ],
                   const SizedBox(height: 10),
@@ -1577,10 +1956,19 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Subtotal', style: TextStyle(fontSize: 13, color: AppColors.inkSoft)),
+                        const Text(
+                          'Subtotal',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.inkSoft,
+                          ),
+                        ),
                         Text(
                           'Rs. ${s._subtotal.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 13, color: AppColors.inkSoft),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.inkSoft,
+                          ),
                         ),
                       ],
                     ),
@@ -1588,10 +1976,19 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Returns', style: TextStyle(fontSize: 13, color: AppColors.critical)),
+                        const Text(
+                          'Returns',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.critical,
+                          ),
+                        ),
                         Text(
                           '- Rs. ${s._returnsTotal.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 13, color: AppColors.critical),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.critical,
+                          ),
                         ),
                       ],
                     ),
@@ -1600,10 +1997,20 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Total', style: TextStyle(fontSize: 14, color: AppColors.inkSoft)),
+                      const Text(
+                        'Total',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.inkSoft,
+                        ),
+                      ),
                       Text(
                         'Rs. ${s._total.toStringAsFixed(2)}',
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.ink),
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink,
+                        ),
                       ),
                     ],
                   ),
@@ -1612,8 +2019,22 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Balance due', style: TextStyle(fontSize: 13, color: AppColors.warn, fontWeight: FontWeight.w600)),
-                        Text('Full amount', style: TextStyle(fontSize: 13, color: AppColors.warn, fontWeight: FontWeight.w600)),
+                        Text(
+                          'Balance due',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.warn,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'Full amount',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.warn,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ],
                     ),
                   ] else if (s._allowsPartialPayment && s._balanceDue > 0) ...[
@@ -1621,10 +2042,19 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Paid now', style: TextStyle(fontSize: 13, color: AppColors.inkSoft)),
+                        const Text(
+                          'Paid now',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.inkSoft,
+                          ),
+                        ),
                         Text(
                           'Rs. ${s._paidAmount.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 13, color: AppColors.inkSoft),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.inkSoft,
+                          ),
                         ),
                       ],
                     ),
@@ -1632,10 +2062,21 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Balance due', style: TextStyle(fontSize: 13, color: AppColors.warn, fontWeight: FontWeight.w600)),
+                        const Text(
+                          'Balance due',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.warn,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         Text(
                           'Rs. ${s._balanceDue.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 13, color: AppColors.warn, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.warn,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -1654,7 +2095,10 @@ class _CheckoutScreenState extends State<_CheckoutScreen> {
                           ? const SizedBox(
                               height: 20,
                               width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
                           : const Text('Complete Sale'),
                     ),
@@ -1745,7 +2189,11 @@ class _QtyStepper extends StatelessWidget {
           _stepBtn(Icons.remove_rounded, onDecrement),
           SizedBox(
             width: 24,
-            child: Text('$quantity', textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Text(
+              '$quantity',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
           ),
           _stepBtn(Icons.add_rounded, onIncrement),
         ],
@@ -1770,7 +2218,11 @@ class _CategoryChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _CategoryChip({required this.label, required this.selected, required this.onTap});
+  const _CategoryChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -32,14 +32,20 @@ class ShopSettings {
 
   factory ShopSettings.fromJson(Map<String, dynamic> json) {
     return ShopSettings(
-      name: (json['name'] as String?)?.isNotEmpty == true ? json['name'] : fallback.name,
+      name: (json['name'] as String?)?.isNotEmpty == true
+          ? json['name']
+          : fallback.name,
       address: json['address'] ?? '',
       phone: json['phone'] ?? '',
       companyPhone: json['company_phone'] ?? '',
       taxId: json['tax_id'] ?? '',
       footerNote: json['footer_note'] ?? '',
-      paperSize: (json['paper_size'] as String?)?.isNotEmpty == true ? json['paper_size'] : fallback.paperSize,
-      receiptLanguage: (json['receipt_language'] as String?)?.isNotEmpty == true ? json['receipt_language'] : fallback.receiptLanguage,
+      paperSize: (json['paper_size'] as String?)?.isNotEmpty == true
+          ? json['paper_size']
+          : fallback.paperSize,
+      receiptLanguage: (json['receipt_language'] as String?)?.isNotEmpty == true
+          ? json['receipt_language']
+          : fallback.receiptLanguage,
     );
   }
 }
