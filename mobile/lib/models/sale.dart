@@ -17,12 +17,12 @@ class SaleItemInput {
   });
 
   Map<String, dynamic> toJson() => {
-        'product_id': productId,
-        'quantity': quantity,
-        'discount_type': discountType,
-        'discount_percent': discountPercent,
-        'discount_amount': discountAmount,
-      };
+    'product_id': productId,
+    'quantity': quantity,
+    'discount_type': discountType,
+    'discount_percent': discountPercent,
+    'discount_amount': discountAmount,
+  };
 }
 
 /// A product being returned from an earlier purchase, applied as a credit
@@ -34,9 +34,9 @@ class ReturnInput {
   ReturnInput({required this.saleItemId, required this.quantity});
 
   Map<String, dynamic> toJson() => {
-        'sale_item_id': saleItemId,
-        'quantity': quantity,
-      };
+    'sale_item_id': saleItemId,
+    'quantity': quantity,
+  };
 }
 
 class Sale {
@@ -69,7 +69,9 @@ class Sale {
       saleDate: DateTime.parse(json['sale_date']),
       status: json['status'] ?? 'completed',
       customerName: json['customer'] != null ? json['customer']['name'] : null,
-      customerPhone: json['customer'] != null ? json['customer']['phone'] : null,
+      customerPhone: json['customer'] != null
+          ? json['customer']['phone']
+          : null,
     );
   }
 }

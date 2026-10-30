@@ -28,7 +28,8 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
 
   /// The category actually assigned to the customer: the subcategory if one
   /// was picked, otherwise the top-level category itself.
-  CustomerCategory? get _effectiveCategory => _selectedSubcategory ?? _selectedTopLevel;
+  CustomerCategory? get _effectiveCategory =>
+      _selectedSubcategory ?? _selectedTopLevel;
 
   @override
   void initState() {
@@ -65,14 +66,18 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
     try {
       await _customerService.create(
         name: _nameController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        address: _addressController.text.trim().isEmpty
+            ? null
+            : _addressController.text.trim(),
         categoryId: _effectiveCategory?.id,
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Customer created.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Customer created.')));
         Navigator.pop(context, true);
       }
     } on ApiException catch (e) {
@@ -102,7 +107,8 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
                   label: RequiredLabel('Name'),
                   prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Name is required' : null,
               ),
               const SizedBox(height: 14),
               TextFormField(
@@ -132,7 +138,9 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
                     prefixIcon: Icon(Icons.sell_outlined, size: 20),
                   ),
                   items: _categories
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
+                      .map(
+                        (c) => DropdownMenuItem(value: c, child: Text(c.name)),
+                      )
                       .toList(),
                   onChanged: (c) => setState(() {
                     _selectedTopLevel = c;
@@ -141,17 +149,27 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
                     _selectedSubcategory = null;
                   }),
                 ),
-                if (_selectedTopLevel != null && _selectedTopLevel!.children.isNotEmpty) ...[
+                if (_selectedTopLevel != null &&
+                    _selectedTopLevel!.children.isNotEmpty) ...[
                   const SizedBox(height: 14),
                   DropdownButtonFormField<CustomerCategory?>(
                     initialValue: _selectedSubcategory,
                     decoration: const InputDecoration(
                       labelText: 'Subcategory (optional)',
-                      prefixIcon: Icon(Icons.subdirectory_arrow_right_rounded, size: 20),
+                      prefixIcon: Icon(
+                        Icons.subdirectory_arrow_right_rounded,
+                        size: 20,
+                      ),
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('General (no subcategory)')),
-                      ..._selectedTopLevel!.children.map((sc) => DropdownMenuItem(value: sc, child: Text(sc.name))),
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('General (no subcategory)'),
+                      ),
+                      ..._selectedTopLevel!.children.map(
+                        (sc) =>
+                            DropdownMenuItem(value: sc, child: Text(sc.name)),
+                      ),
                     ],
                     onChanged: (c) => setState(() => _selectedSubcategory = c),
                   ),
@@ -160,17 +178,30 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
               if (_error != null) ...[
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.criticalSoft,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.critical),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        size: 18,
+                        color: AppColors.critical,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(_error!, style: const TextStyle(color: AppColors.critical, fontSize: 13)),
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(
+                            color: AppColors.critical,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -185,7 +216,10 @@ class _NewCustomerScreenState extends State<NewCustomerScreen> {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : const Text('Create Customer'),
                 ),

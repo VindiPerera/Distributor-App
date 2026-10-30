@@ -33,7 +33,9 @@ class _RootScreen extends StatelessWidget {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
         if (auth.isLoading) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         return auth.isLoggedIn ? const HomeScreen() : const LoginScreen();
       },

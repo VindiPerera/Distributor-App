@@ -22,7 +22,9 @@ class CustomerLedgerEntry {
     final reference = json['reference'] as Map<String, dynamic>?;
     String? referenceLabel;
     if (reference != null) {
-      if (referenceType != null && referenceType.contains('Sale') && reference['invoice_number'] != null) {
+      if (referenceType != null &&
+          referenceType.contains('Sale') &&
+          reference['invoice_number'] != null) {
         referenceLabel = reference['invoice_number'] as String;
       } else if (reference['method'] != null) {
         referenceLabel = (reference['method'] as String).replaceAll('_', ' ');

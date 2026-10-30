@@ -19,7 +19,9 @@ class CustomerCategory {
       name: json['name'],
       parentId: json['parent_id'],
       children: json['children'] != null
-          ? (json['children'] as List).map((e) => CustomerCategory.fromJson(e)).toList()
+          ? (json['children'] as List)
+                .map((e) => CustomerCategory.fromJson(e))
+                .toList()
           : const [],
     );
   }

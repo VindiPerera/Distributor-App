@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../dev_config.dart';
+import 'demo_api.dart';
 
 class ApiException implements Exception {
   final int statusCode;
@@ -50,12 +52,17 @@ class ApiClient {
   }
 
   Future<dynamic> get(String path, {Map<String, String>? query}) async {
+    if (kDemoMode) return DemoApi.handle('GET', path, query: query);
     final uri = Uri.parse('$baseUrl$path').replace(queryParameters: query);
     final res = await http.get(uri, headers: await _headers());
     return _handle(res);
   }
 
-  Future<dynamic> post(String path, Map<String, dynamic> body, {bool withAuth = true}) async {
+  Future<dynamic> post(
+    String path,
+    Map<String, dynamic> body, {
+    bool withAuth = true,
+  }) async {
     final res = await http.post(
       Uri.parse('$baseUrl$path'),
       headers: await _headers(withAuth: withAuth),
@@ -65,6 +72,7 @@ class ApiClient {
   }
 
   Future<dynamic> put(String path, Map<String, dynamic> body) async {
+    if (kDemoMode) return DemoApi.handle('PUT', path, body: body);
     final res = await http.put(
       Uri.parse('$baseUrl$path'),
       headers: await _headers(),
@@ -74,7 +82,11 @@ class ApiClient {
   }
 
   Future<dynamic> delete(String path) async {
-    final res = await http.delete(Uri.parse('$baseUrl$path'), headers: await _headers());
+    if (kDemoMode) return DemoApi.handle('DELETE', path);
+    final res = await http.delete(
+      Uri.parse('$baseUrl$path'),
+      headers: await _headers(),
+    );
     return _handle(res);
   }
 

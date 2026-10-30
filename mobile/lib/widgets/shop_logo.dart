@@ -43,7 +43,11 @@ class ShopLogo extends StatelessWidget {
         color: AppColors.accentSoft,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-      child: Icon(Icons.storefront_rounded, size: size * 0.5, color: AppColors.accent),
+      child: Icon(
+        Icons.storefront_rounded,
+        size: size * 0.5,
+        color: AppColors.accent,
+      ),
     );
   }
 }
