@@ -14,7 +14,7 @@
 
             <!-- Sidebar -->
             <aside
-                class="fixed inset-y-0 left-0 z-40 w-64 bg-accent flex flex-col transition-transform -translate-x-full lg:translate-x-0"
+                class="fixed inset-y-0 left-0 z-40 w-64 bg-accent flex flex-col transition-transform -translate-x-full lg:translate-x-0 print:hidden"
                 :class="{ 'translate-x-0': mobileNavOpen }"
             >
                 <div class="h-16 flex items-center gap-2.5 px-6 border-b border-white/15 shrink-0">
@@ -110,12 +110,12 @@
 
             <!-- Mobile nav backdrop -->
             <div x-show="mobileNavOpen" @click="mobileNavOpen = false" x-transition.opacity
-                 style="display: none;" class="fixed inset-0 bg-ink/40 z-30 lg:hidden"></div>
+                 style="display: none;" class="fixed inset-0 bg-ink/40 z-30 lg:hidden print:hidden"></div>
 
             <!-- Main -->
-            <div class="flex-1 flex flex-col min-w-0 lg:pl-64">
+            <div class="flex-1 flex flex-col min-w-0 lg:pl-64 print:pl-0">
                 <!-- Mobile top bar -->
-                <div class="lg:hidden h-14 flex items-center gap-3 px-4 border-b border-line bg-surface sticky top-0 z-20">
+                <div class="lg:hidden print:hidden h-14 flex items-center gap-3 px-4 border-b border-line bg-surface sticky top-0 z-20">
                     <button @click="mobileNavOpen = true" class="p-1.5 -ml-1.5 text-ink-soft">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
@@ -123,7 +123,7 @@
                 </div>
 
                 @isset($header)
-                    <header class="border-b border-line bg-surface px-6 lg:px-10 py-6">
+                    <header class="border-b border-line bg-surface px-6 lg:px-10 py-6 print:hidden">
                         <div class="max-w-6xl">
                             {{ $header }}
                         </div>

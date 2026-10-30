@@ -24,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
         View::composer(['layouts.app', 'sales.show'], function ($view) {
             $view->with('shopName', ShopSetting::current()->name ?: config('app.name'));
         });
+
+        View::composer('sales.show', function ($view) {
+            $view->with('shop', ShopSetting::current());
+        });
     }
 }
